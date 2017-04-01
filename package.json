@@ -1,7 +1,7 @@
 {
   "name": "node-commerce",
   "version": "1.0.0",
-  "description": "A free alternative for e-commerce using Node.js\"",
+  "description": "A free alternative for e-commerce using Node.js",
   "main": "index.js",
   "repository": "git@github.com:cezarlz/node-commerce.git",
   "author": "Cezar Luiz <cezarluiz.c@gmail.coml>",
