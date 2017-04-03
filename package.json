@@ -6,6 +6,7 @@
   "repository": "git@github.com:cezarlz/node-commerce.git",
   "author": "Cezar Luiz <cezarluiz.c@gmail.coml>",
   "license": "MIT",
+  "theme": "venus",
   "dependencies": {
     "body-parser": "^1.17.1",
     "compression": "^1.6.2",
@@ -16,6 +17,7 @@
     "helmet": "^3.5.0",
     "lodash": "^4.17.4",
     "morgan": "^1.8.1",
+    "pug": "^2.0.0-beta11",
     "response-time": "^2.3.2",
     "serve-favicon": "^2.4.2",
     "serve-static": "^1.12.1"
