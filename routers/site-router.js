@@ -6,17 +6,17 @@ const pjson = require('../package.json');
  * Gets
  */
 router.get('/', (req, res) => {
-  res.render(`themes/${pjson.theme}/index`, {
+  res.render(`index`, {
     foo: 'bar'
   });
 });
 
 router.get('/cart', (req, res) => {
-  res.render(`themes/${pjson.theme}/cart`);
+  res.render(`cart`);
 });
 
 router.get('/checkout', (req, res) => {
-  res.render(`themes/${pjson.theme}/checkout`);
+  res.render(`checkout`);
 });
 
 router.get('/order/:id', (req, res) => {
@@ -24,15 +24,15 @@ router.get('/order/:id', (req, res) => {
 });
 
 router.get('/product/:slug', (req, res) => {
-  res.render(`themes/${pjson.theme}/product`);
+  res.render(`product`);
 });
 
 router.get('/category/:category', (req, res) => {
-  res.render(`themes/${pjson.theme}/category`);
+  res.render(`category`);
 });
 
 router.get('/page/:pageSlug', (req, res) => {
-  res.render(`themes/${pjson.theme}/page`);
+  res.render(`page`);
 });
 
 /**
@@ -55,13 +55,13 @@ router.post('/checkout', (req, res) => {
  */
 router.use((err, req, res, next) => {
   if (err.hasOwnProperty('view')) {
-    res.render(`themes/${pjson.theme}/index`);
+    res.render(`index`);
   }
 
   if (err.stack.indexOf('views') !== -1) {
     res.status(500).send('<h1>The file index.pug was not found.</h1>');
   }
-  
+
   next();
 });
 
