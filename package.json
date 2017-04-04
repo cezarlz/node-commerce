@@ -8,7 +8,7 @@
   "license": "MIT",
   "theme": "venus",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon --harmony"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
@@ -21,6 +21,8 @@
     "express-theme-pug": "^1.0.4",
     "helmet": "^3.5.0",
     "lodash": "^4.17.4",
+    "mongodb": "^2.2.25",
+    "mongorito": "^2.2.0",
     "morgan": "^1.8.1",
     "pug": "^2.0.0-beta11",
     "response-time": "^2.3.2",

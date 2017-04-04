@@ -10,6 +10,8 @@ const responseTime = require('response-time');
 const morgan = require('morgan');
 const pjson = require('./package.json');
 const themes = require('express-theme-pug');
+const Mongorito = require('mongorito');
+
 
 /**
  * Routers
@@ -45,4 +47,8 @@ server.set('theme', `themes/venus`);
 server.use('/', siteRouter);
 server.use('/nc-admin', adminRouter);
 
+/**
+ * Run app, run!
+ */
+Mongorito.connect('localhost/ecommerce');
 server.listen(process.env.NC_APP_PORT);
