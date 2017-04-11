@@ -6,9 +6,8 @@
   "repository": "git@github.com:cezarlz/node-commerce.git",
   "author": "Cezar Luiz <cezarluiz.c@gmail.coml>",
   "license": "MIT",
-  "theme": "venus",
   "scripts": {
-    "dev": "nodemon --harmony"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
@@ -20,9 +19,10 @@
     "express": "^4.15.2",
     "express-theme-pug": "^1.0.4",
     "helmet": "^3.5.0",
+    "ip": "^1.1.5",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.25",
-    "mongorito": "^2.2.0",
+    "mongoose": "^4.9.4",
     "morgan": "^1.8.1",
     "pug": "^2.0.0-beta11",
     "response-time": "^2.3.2",
