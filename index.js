@@ -54,7 +54,6 @@ let o = new Order({
   },
   status: 'pending',
   currency: 'USD',
-  customer_id: 1,
   billing: {
     first_name: 'Cezar Luiz',
     last_name: 'Sampaio',
