@@ -7,7 +7,11 @@
   "author": "Cezar Luiz <cezarluiz.c@gmail.coml>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "7.8.0"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
