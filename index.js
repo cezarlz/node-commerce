@@ -83,4 +83,4 @@ let order = o.save();
 /**
  * Run app, run!
  */
-server.listen(process.env.NC_APP_PORT);
+server.listen(process.env.PORT || 3000);
