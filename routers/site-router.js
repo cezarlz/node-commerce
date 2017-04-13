@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 
@@ -5,9 +6,7 @@ const router = express.Router();
  * Gets
  */
 router.get('/', (req, res) => {
-  res.render(`index`, {
-    foo: 'bar'
-  });
+  res.render(`index`);
 });
 
 router.get('/cart', (req, res) => {
@@ -52,15 +51,36 @@ router.post('/checkout', (req, res) => {
 /**
  * Middlewares
  */
+router.use((req, res, next) => {
+  // 404 Requests
+  res
+    .status(404)
+    .render(`404`);
+
+  next();
+});
+
 router.use((err, req, res, next) => {
-  if (err.hasOwnProperty('view')) {
-    res.render(`index`);
-  }
+  if (err.stack.indexOf('"views"') !== -1) {
+    try {
+      if (!fs.existsSync(`./views/${req.app.get('theme')}/index.pug`)) {
+        throw new Error('The file index.pug was not found.');
+      }
 
-  if (err.stack.indexOf('views') !== -1) {
-    res.status(500).send('<h1>The file index.pug was not found.</h1>');
-  }
+      res.render(`index`);
+    }
+    catch (e) {
+      res
+        .status(500)
+        .send(`
+          <h1>${e.message}</h1>
+          <pre>${e.stack}</pre>
+        `);
 
+      next(err);
+    }
+  }
+  
   next();
 });
 

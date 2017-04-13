@@ -37,6 +37,30 @@ server.use(themes);
 server.set('views', `views`);
 server.set('view engine', 'pug');
 server.set('theme', `themes/venus`);
+server.set('root', __dirname);
+
+/**
+ * Helpers
+ */
+server.use((req, res, next) => {
+  res.locals.is_home = function () {
+    return req.originalUrl === '/';
+  };
+
+  res.locals.is_checkout = function () {
+    return req.originalUrl === '/checkout';
+  };
+
+  res.locals.is_cart = function () {
+    return req.originalUrl === '/cart';
+  };
+
+  res.locals.is_404 = function () {
+    return req.statusCode === '404';
+  };
+
+  next();
+});
 
 /**
  * Routes
