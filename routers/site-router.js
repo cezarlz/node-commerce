@@ -10,7 +10,9 @@ router.get('/', (req, res) => {
 });
 
 router.get('/cart', (req, res) => {
-  res.render(`cart`);
+  res.render(`cart`, {
+    teste: 'teste'
+  });
 });
 
 router.get('/checkout', (req, res) => {
@@ -18,7 +20,7 @@ router.get('/checkout', (req, res) => {
 });
 
 router.get('/order/:id', (req, res) => {
-
+  res.render(`order`);
 });
 
 router.get('/product/:slug', (req, res) => {
@@ -49,9 +51,14 @@ router.post('/checkout', (req, res) => {
 });
 
 /**
- * Middlewares
+ * 404
  */
 router.use((req, res, next) => {
+  // Helpers
+  res.locals.is_404 = function () {
+    return true;
+  };
+
   // 404 Requests
   res
     .status(404)
@@ -76,12 +83,10 @@ router.use((err, req, res, next) => {
           <h1>${e.message}</h1>
           <pre>${e.stack}</pre>
         `);
-
-      next(err);
     }
   }
   
-  next();
+  next(err);
 });
 
 module.exports = router;

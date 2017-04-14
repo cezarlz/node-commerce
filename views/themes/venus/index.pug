@@ -1,7 +1,22 @@
 extends layout.pug
 
 block content
-  h1= is_home()
-  h2= is_404()
+  if is_home()
+    h1= lower('Home')
+  if is_404()
+    h1= upper('Not Found')
+  if is_checkout()
+    h1 Checkout
+  if is_cart()
+    h1 Cart
+  if is_page()
+    h1 Page
+  if is_order()
+    h1 Order
+  if is_product()
+    h1 Product
 
 block footer
+
+block head
+  title Home
