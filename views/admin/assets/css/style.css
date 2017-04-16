@@ -1,0 +1,17 @@
+/* Body */
+body {
+  background-color: #fafafa;
+}
+
+/* Components */
+.page-section {
+  padding: 40px 0;
+}
+
+.box {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 20px;
+
+  background-color: #fff;
+}

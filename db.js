@@ -1,9 +1,13 @@
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+const db = require('mongoose');
+
+/**
+ * Promise
+ */
+db.Promise = global.Promise;
 
 /**
  * Database
  */
-mongoose.connect(process.env.NC_DB_NAME);
+db.connect(process.env.NC_DB_NAME);
 
-module.exports = mongoose.connection;
+module.exports = db;

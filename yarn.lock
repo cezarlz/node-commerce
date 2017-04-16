@@ -571,10 +571,6 @@ expand-range@^1.8.1:
   dependencies:
     fill-range "^2.1.0"
 
-express-theme-pug@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/express-theme-pug/-/express-theme-pug-1.0.4.tgz#3c219e6c56e371361510f3ec4de089399662d873"
-
 express@^4.15.2:
   version "4.15.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.15.2.tgz#af107fc148504457f2dca9a6f2571d7129b97b35"
@@ -1292,7 +1288,7 @@ mongodb-core@2.1.9:
     bson "~1.0.4"
     require_optional "~1.0.0"
 
-mongodb@2.2.25, mongodb@^2.2.25:
+mongodb@2.2.25:
   version "2.2.25"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.25.tgz#d3b25dad00eda2bdfcbc996210ba082ac686a6b6"
   dependencies:

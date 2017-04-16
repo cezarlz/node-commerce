@@ -1,0 +1,32 @@
+extends partials/layout
+
+block content
+  section.page-section
+    .box
+      form(action="/nc-admin/install" method="post").form-horizontal
+        p Node Commerce uses MongoDB as database provider. Plase, fill with your database connections details.
+
+        .row
+          .form-group
+            label.col-sm-4.control-label Database Name
+            .col-sm-8
+              input(name="database-name" type="text" value="node-commerce" placeholder="Database Name").form-control
+
+          .form-group
+            label.col-sm-4.control-label Database Username
+            .col-sm-8
+              input(name="database-username" type="text" placeholder="Username").form-control
+
+          .form-group
+            label.col-sm-4.control-label Database Password
+            .col-sm-8
+              input(name="database-password" type="password" placeholder="Password").form-control
+
+          .form-group
+            label.col-sm-4.control-label Database Port
+            .col-sm-8
+              input(name="database-port" type="text" value="27017" placeholder="Database Port").form-control
+
+          .form-group
+            .col-xs-12
+              button(type="submit").btn.btn-default.pull-right Save

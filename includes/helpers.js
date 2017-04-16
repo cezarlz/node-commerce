@@ -1,3 +1,5 @@
+const Config = require('../models/Config');
+
 module.exports = (req, res, next) => {
   const helpers = {
     is_home: function () {
@@ -24,11 +26,10 @@ module.exports = (req, res, next) => {
     is_admin: function () {
       return req.path.match(/^\/nc\-admin/) !== null;
     },
-    lower: function (text) {
-      return text.toString().toLowerCase();
-    },
-    upper: function (text) {
-      return text.toString().toUpperCase();
+    is_site_installed: async function () {
+      const config = await Config.find().exec();
+
+      return config.is_site_installed;
     }
   };
 
