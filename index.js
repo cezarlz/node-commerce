@@ -9,7 +9,6 @@ const helmet = require('helmet');
 const responseTime = require('response-time');
 const morgan = require('morgan');
 const pjson = require('./package.json');
-const themes = require('express-theme-pug');
 const db = require('./db');
 const helpers = require('./includes/helpers');
 
