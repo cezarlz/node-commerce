@@ -21,9 +21,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/cart', (req, res) => {
-  res.render(`${res.locals.theme}/cart`, {
-    teste: 'teste'
-  });
+  res.render(`${res.locals.theme}/cart`);
 });
 
 router.get('/checkout', (req, res) => {
@@ -70,7 +68,7 @@ router.use((req, res, next) => {
     return true;
   };
 
-  if (!res.locals.is_admin) {
+  if (!res.locals.is_admin() && !res.locals.is_asset_request()) {
     // 404 Requests
     res
       .status(404)

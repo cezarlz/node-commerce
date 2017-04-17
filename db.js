@@ -6,8 +6,8 @@ const db = require('mongoose');
 db.Promise = global.Promise;
 
 /**
- * Database
+ * Connect to Database
  */
-db.connect(process.env.NC_DB_NAME);
+db.connect(process.env.NC_MONGO_CONNECT_URL);
 
 module.exports = db;

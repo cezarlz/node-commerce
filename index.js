@@ -4,13 +4,16 @@ require('dotenv').config();
  * Dependencies
  */
 const express = require('express');
-const _ = require('lodash');
+const db = require('./db');
+
 const helmet = require('helmet');
 const responseTime = require('response-time');
 const morgan = require('morgan');
 const pjson = require('./package.json');
-const db = require('./db');
 const helpers = require('./includes/helpers');
+const cookie = require('cookie-parser');
+const session = require('express-session');
+const bodyParser = require('body-parser');
 
 /**
  * Models
@@ -35,6 +38,15 @@ const server = express();
 server.use(helmet());
 server.use(responseTime());
 server.use(morgan('tiny'));
+server.use(cookie());
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(bodyParser.json());
+server.use(session({ 
+  secret: '1a24eec8-44c1-4757-b902-5aace4b88e30', 
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: true }
+}));
 server.use(helpers);
 
 /**

@@ -24,7 +24,10 @@ module.exports = (req, res, next) => {
       return false;
     },
     is_admin: function () {
-      return req.path.match(/^\/nc\-admin/) !== null;
+      return req.path.match(/^\/nc\-admin\/?/) !== null;
+    },
+    is_asset_request: function () {
+      return req.path.match(/(\.css|\.js|\.jpe?g|\.png|\.webp|\.ico|\.mp?3?4|\.mpeg|\.avi|\.ogg|\.ogv)$/) !== null;
     },
     is_site_installed: async function () {
       const config = await Config.find().exec();

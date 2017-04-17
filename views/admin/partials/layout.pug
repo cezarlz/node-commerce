@@ -31,3 +31,18 @@ html(lang="en-us")
       script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js")
       script(src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js")
       
+    if form_errors
+      script.
+        var form_errors = !{JSON.stringify(form_errors)};
+
+        for (var i in form_errors) {
+          var error = form_errors[i];
+          var input = $('input[name="' + error.name + '"]');
+
+          input
+            .parent('div')
+              .append('<span class="help-block">' + error.message + '</span>')
+            .end()
+            .parents('.form-group')
+            .addClass('has-error');
+        }
