@@ -8,7 +8,7 @@ module.exports = {
     res.render('nc-admin/index');
   },
   install: async function (req, res) {
-    if (!db.connection.readyState || !process.env.NC_MONGO_CONNECT_URL) {
+    if (db.connection.readyState || !process.env.NC_MONGO_CONNECT_URL) {
       res.render('nc-admin/install-error');
     }
 
@@ -16,6 +16,15 @@ module.exports = {
       package: packageHelpers.getPackage(),
       themes: await themesHelpers.getThemes()
     });
+  },
+  checkInstallation: function (req, res, next) {
+    const package = packageHelpers.getPackage();
+
+    if (package.site_title && package.site_description && package.theme) {
+      return res.redirect('/nc-admin/login');
+    }
+
+    next();
   },
   configure: async function (req, res) {
     try {

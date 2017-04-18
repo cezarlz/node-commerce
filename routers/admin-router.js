@@ -3,12 +3,12 @@ const router = express.Router();
 const { 
   home, 
   install, 
-  configure
+  configure,
+  checkInstallation
 } = require('../controllers/admin-controller');
-const { checkInstallation } = require('../controllers/env-controller');
-
 router.get('/', home);
 
+router.all('/install', checkInstallation);
 router.get('/install', install);
 router.post('/install', configure);
 
