@@ -44,5 +44,12 @@ block content
               input(name="user_email" type="email" placeholder="e.g.: email@example.com").form-control
 
           .form-group
+            label.col-sm-4.control-label Theme
+            .col-sm-8
+              select(name="theme").form-control
+                each theme in themes
+                  option(value= theme.folder)= `${theme.name} - ${theme.description}`
+
+          .form-group
             .col-xs-12
               button(type="submit").btn.btn-default.pull-right Install NodeCommerce

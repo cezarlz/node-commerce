@@ -1,36 +1,38 @@
+'use strict';
+
 require('dotenv').config();
 
 /**
  * Dependencies
  */
+const path = require('path');
 const express = require('express');
+const server = express();
 const db = require('./db');
 
 const helmet = require('helmet');
 const responseTime = require('response-time');
 const morgan = require('morgan');
-const pjson = require('./package.json');
-const helpers = require('./includes/helpers');
 const cookie = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 
 /**
- * Models
+ * Controllers
  */
-const Config = require('./models/Config');
+const envController = require('./controllers/env-controller');
+
+/**
+ * Helpers
+ */
+const helpers = require('./helpers/general-helpers');
+const packageHelpers = require('./helpers/package-helpers');
 
 /**
  * Routers
  */
 const siteRouter = require('./routers/site-router');
 const adminRouter = require('./routers/admin-router');
-
-/**
- * Variables
- */
-const server = express();
-
 
 /**
  * Middlewares
@@ -59,7 +61,19 @@ server.set('root', __dirname);
 /**
  * Routes
  */
-// Check Installation
+server.use('/nc-admin', express.static(path.resolve(__dirname, './views/nc-admin/assets')));
+server.use((req, res, next) => {
+  const configs = packageHelpers.getPackage();
+  
+  const isInstalled = (configs.site_title || configs.site_description || configs.theme);
+
+  if (!res.locals.isInstall() && !isInstalled) {
+    return res.redirect('/nc-admin/install');
+  }
+
+  next();
+});
+
 server.use('/nc-admin', adminRouter);
 server.use('/', siteRouter);
 

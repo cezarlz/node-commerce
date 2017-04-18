@@ -1,16 +1,18 @@
+'use strict';
+
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
+const configs = require('../package.json');
 
 // Set theme
+router.use(express.static(path.resolve(__dirname, `../views/themes/${configs.theme}`)));
+
 router.use((req, res, next) => {
-  const theme = `themes/venus`;
+  res.locals.theme = `themes/${configs.theme}`;
 
-  res.locals.theme = theme;
-
-  router.use(express.static(`views/${theme}`));
-
-  next('route');
+  next();
 });
 
 /**
@@ -64,11 +66,11 @@ router.post('/checkout', (req, res) => {
  */
 router.use((req, res, next) => {
   // Helpers
-  res.locals.is_404 = function () {
+  res.locals.is404 = function () {
     return true;
   };
 
-  if (!res.locals.is_admin() && !res.locals.is_asset_request()) {
+  if (!res.locals.isAdmin()) {
     // 404 Requests
     res
       .status(404)

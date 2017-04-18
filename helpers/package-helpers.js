@@ -21,5 +21,8 @@ module.exports = {
     return json.writeFileSync(file, content, {
       spaces: 2
     });
+  },
+  getPackage: function () {
+    return package;
   }
 };
