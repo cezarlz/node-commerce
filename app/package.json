@@ -38,8 +38,5 @@
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
-  },
-  "site_title": "Olar",
-  "site_description": "HAHHAHA",
-  "theme": "venus"
+  }
 }

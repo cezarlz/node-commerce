@@ -8,7 +8,7 @@ module.exports = {
     res.render('nc-admin/index');
   },
   install: async function (req, res) {
-    if (db.connection.readyState || !process.env.NC_MONGO_CONNECT_URL) {
+    if (db.connection.readyState !== 1 || !process.env.NC_MONGO_CONNECT_URL) {
       res.render('nc-admin/install-error');
     }
 

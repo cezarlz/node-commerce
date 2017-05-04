@@ -4,6 +4,6 @@ EXPOSE 3000
 
 RUN mkdir /src
 WORKDIR /src
-ADD ./app .
+ADD ./package.json .
 RUN npm install
 CMD npm run dev
