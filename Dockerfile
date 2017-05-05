@@ -10,6 +10,7 @@ WORKDIR /src
 
 ADD app/package.json .
 RUN npm install
+ADD app/ .
 
 EXPOSE 3000
 

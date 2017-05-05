@@ -12,6 +12,7 @@ services:
       - mongo
     links:
       - mongo
+    restart: on-failure
 
   mongo:
     image: mongo:3
