@@ -1,14 +1,17 @@
+'use strict';
+
 const fs = require('fs');
 const p = require('path');
 const json = require('jsonfile');
 const path = p.resolve(__dirname, '../package.json');
-const package = json.readFileSync(path);
 
 module.exports = {
   addValue: function (propertyName, value) {
-    package[propertyName] = value;
+    const configs = this.getConfigs();
+    
+    configs[propertyName] = value;
 
-    this.writePackage(path, package);
+    this.writePackage(path, configs);
 
     return this;
   },
@@ -22,7 +25,7 @@ module.exports = {
       spaces: 2
     });
   },
-  getPackage: function () {
-    return package;
+  getConfigs: function () {
+    return json.readFileSync(path);
   }
 };

@@ -1,12 +1,14 @@
+'use strict';
+
 const db = require('../db');
-const packageHelpers = require('../helpers/package-helpers');
-const themesHelpers = require('../helpers/themes-helpers');
+const configs = require('../helpers/configs');
+const themesHelpers = require('../helpers/themes');
 
 module.exports = {
   checkDatabaseConnection: async (req, res, next) => {
     if (!db.connection.readyState || !process.env.NC_MONGO_CONNECT_URL) {
       return res.render('nc-admin/install', {
-        package: packageHelpers.getPackage(),
+        configs: configs.getConfigs(),
         themes: await themesHelpers.getThemes()
       });
     }
@@ -15,9 +17,9 @@ module.exports = {
   },
 
   checkInstallation: (req, res, next) => {
-    const package = packageHelpers.getPackage();
+    const c = configs.getConfigs();
 
-    if (!package.site_title || !package.site_description || !package.theme) {
+    if (!c.site_title || !c.site_description || !c.theme) {
       return res.redirect('/nc-admin/install');
     }
 

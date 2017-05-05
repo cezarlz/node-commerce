@@ -7,13 +7,13 @@
   "author": "Cezar Luiz <cezarluiz.c@gmail.coml>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "pm2-docker start index.js"
   },
   "engines": {
-    "node": "7.9.0"
+    "node": "7.10.0"
   },
   "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "boss-validator": "^0.8.0",
@@ -36,7 +36,7 @@
     "serve-favicon": "^2.4.2",
     "serve-static": "^1.12.1"
   },
-  "devDependencies": {
-    "nodemon": "^1.11.0"
-  }
+  "site_title": "Awesome",
+  "site_description": "A free alternative for e-commerce using Node.js",
+  "theme": "venus"
 }

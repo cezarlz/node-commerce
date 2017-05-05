@@ -4,13 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const router = express.Router();
-const configs = require('../package.json');
+const configs = require('../helpers/configs');
 
-// Set theme
-router.use(express.static(path.resolve(__dirname, `../views/themes/${configs.theme}`)));
+// Set path of static resources
+router.use(express.static(path.resolve(__dirname, `../views/themes/`)));
 
 router.use((req, res, next) => {
-  res.locals.theme = `themes/${configs.theme}`;
+  const c = configs.getConfigs();
+  
+  // Set the theme activated
+  res.locals.theme = `themes/${c.theme}`;
 
   next();
 });

@@ -20,19 +20,19 @@ const bodyParser = require('body-parser');
 /**
  * Controllers
  */
-const envController = require('./controllers/env-controller');
+const envController = require('./controllers/env');
 
 /**
  * Helpers
  */
-const helpers = require('./helpers/general-helpers');
-const packageHelpers = require('./helpers/package-helpers');
+const helpers = require('./helpers/helpers');
+const configs = require('./helpers/configs');
 
 /**
  * Routers
  */
-const siteRouter = require('./routers/site-router');
-const adminRouter = require('./routers/admin-router');
+const siteRouter = require('./routers/site');
+const adminRouter = require('./routers/admin');
 
 /**
  * Middlewares
@@ -63,9 +63,9 @@ server.set('root', __dirname);
  */
 server.use('/nc-admin', express.static(path.resolve(__dirname, './views/nc-admin/assets')));
 server.use((req, res, next) => {
-  const configs = packageHelpers.getPackage();
+  const c = configs.getConfigs();
   
-  const isInstalled = (configs.site_title || configs.site_description || configs.theme);
+  const isInstalled = (c.site_title || c.site_description || c.theme);
 
   if (!res.locals.isInstall() && !isInstalled) {
     return res.redirect('/nc-admin/install');

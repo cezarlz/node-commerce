@@ -1,3 +1,5 @@
+'use strict';
+
 const db = require('../db');
 const { Schema } = db;
 const ip = require('ip');

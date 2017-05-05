@@ -1,32 +1,37 @@
+'use strict';
+
 const db = require('../db');
 const boss = require('boss-validator');
-const packageHelpers = require('../helpers/package-helpers');
-const themesHelpers = require('../helpers/themes-helpers');
+const configs = require('../helpers/configs');
+const themes = require('../helpers/themes');
+
+// Models
+const User = require('../models/User');
 
 module.exports = {
-  home: function (req, res) {
+  renderHome: function (req, res) {
     res.render('nc-admin/index');
   },
-  install: async function (req, res) {
+  renderInstall: async function (req, res) {
     if (db.connection.readyState !== 1 || !process.env.NC_MONGO_CONNECT_URL) {
       res.render('nc-admin/install-error');
     }
 
     res.render('nc-admin/install', {
-      package: packageHelpers.getPackage(),
-      themes: await themesHelpers.getThemes()
+      configs: configs.getConfigs(),
+      themes: await themes.getThemes()
     });
   },
   checkInstallation: function (req, res, next) {
-    const package = packageHelpers.getPackage();
+    const c = configs.getConfigs();
 
-    if (package.site_title && package.site_description && package.theme) {
+    if (c.site_title && c.site_description && c.theme) {
       return res.redirect('/nc-admin/login');
     }
 
     next();
   },
-  configure: async function (req, res) {
+  doInstall: async function (req, res) {
     try {
       var data = await boss.validate(req.body, {
         site_title: { required: true },
@@ -45,20 +50,34 @@ module.exports = {
         }];
       }
 
-      packageHelpers
-        .addValue('site_title', data.source.site_title)
-        .addValue('site_description', data.source.site_description)
-        .addValue('theme', data.source.theme);
+      // Create the user
+      const admin = new User({
+        email: data.source.user_email,
+        login: data.source.user_login,
+        password: data.source.user_password
+      });
 
-      return res.redirect('/nc-admin/login');
+      admin.save(err => {
+        if (err) return res.redirect('/nc-admin/install-error'); 
+
+        configs
+          .addValue('site_title', data.source.site_title)
+          .addValue('site_description', data.source.site_description)
+          .addValue('theme', data.source.theme);
+
+          return res.redirect('/nc-admin/login');
+      });
     } catch (e) {
-      const package = packageHelpers.getPackage();
+      const c = configs.getConfigs();
       
       res.render(`nc-admin/install`, {
         form_errors: e,
-        package,
-        themes: await themesHelpers.getThemes()
+        configs: c,
+        themes: await themes.getThemes()
       });
     }
+  },
+  renderLogin: function (req, res) {
+    return res.render(`nc-admin/login`);
   }
 }

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = (req, res, next) => {
   const helpers = {
     isHome: function () {
