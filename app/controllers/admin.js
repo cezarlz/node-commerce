@@ -37,8 +37,8 @@ module.exports = {
         site_title: { required: true },
         site_description: { required: true, maxlength: 160 },
         user_login: { required: true },
-        user_password: { required: true, minlength: 6 },
-        user_password_repeat: { required: true, minlength: 6 },
+        user_password: { required: true, minlength: 10 },
+        user_password_repeat: { required: true, minlength: 10 },
         user_email: { required: true, email: true },
         theme: { required: true }
       });
@@ -58,7 +58,7 @@ module.exports = {
       });
 
       admin.save(err => {
-        if (err) return res.redirect('/nc-admin/install-error'); 
+        if (err) throw err; 
 
         configs
           .addValue('site_title', data.source.site_title)
@@ -79,5 +79,59 @@ module.exports = {
   },
   renderLogin: function (req, res) {
     return res.render(`nc-admin/login`);
+  },
+  doLogin: async function (req, res) {
+    try {
+      var data = await boss.validate(req.body, {
+        username: { required: true },
+        password: {
+          required: true,
+          minlength: 6
+        }
+      });
+
+      const { username, password } = data.source;
+
+      const user = await User.getAuthenticated(username, password);
+
+      console.log(user);
+
+      return res.redirect(`/nc-admin/dashboard`);
+      
+    } catch (reject) {
+      let errors = [];
+
+      if (reject.err) {
+        errors.push({
+          message: 'It was not possible to login. Please try again',
+          name: 'username'
+        });
+      }
+
+      if (reject.reason) {
+        const reasons = User.failedLogin;
+
+        switch (reject.reason) {
+          case reasons.NOT_FOUND:
+          case reasons.PASSWORD_INCORRENT:
+            errors.push({
+              message: 'Invalid username or password. Please try again.',
+              name: 'username'
+            });
+            break;
+          
+          case reasons.MAX_ATTEMPTS:
+            errors.push({
+              message: 'You tried to login 5 times. Please try again in 2 hours.',
+              name: 'username'
+            });
+            break;
+        }
+      }
+
+      res.render(`nc-admin/login`, {
+        form_errors: errors
+      });
+    }
   }
 }

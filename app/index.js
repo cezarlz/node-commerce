@@ -16,11 +16,13 @@ const morgan = require('morgan');
 const cookie = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 /**
  * Controllers
  */
 const envController = require('./controllers/env');
+// const authController = require('./controllers/auth');
 
 /**
  * Helpers
