@@ -7,16 +7,31 @@
   "author": "Cezar Luiz <cezarluiz.c@gmail.coml>",
   "license": "MIT",
   "scripts": {
-    "start": "pm2-docker start index.js --watch"
+    "start": "pm2-docker start index.js",
+    "restart": "pm2 restart all"
+  },
+  "_moduleAliases": {
+    "@app": ".",
+    "@server": "./server",
+    "@helpers": "./helpers",
+    "@plugins": "./plugins",
+    "@themes": "./themes",
+    "@middlewares": "./middlewares",
+    "@views": "./views",
+    "@uploads": "./uploads",
+    "@config": "./config.js",
+    "@db": "./db.js"
   },
   "engines": {
     "node": "7.10.0"
   },
   "dependencies": {
     "bcrypt-nodejs": "^0.0.3",
+    "better-log": "^1.3.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "boss-validator": "^0.8.0",
+    "clone": "^2.1.1",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "cookie-session": "^2.0.0-beta.1",
@@ -28,16 +43,20 @@
     "helmet": "^3.5.0",
     "ip": "^1.1.5",
     "jsonfile": "^2.4.0",
-    "jsonwebtoken": "^7.4.0",
     "lodash": "^4.17.4",
+    "mkdirp": "^0.5.1",
+    "module-alias": "^2.0.0",
+    "moment": "^2.18.1",
     "mongoose": "^4.9.4",
+    "mongoose-paginate": "^5.0.3",
+    "mongoose-slug-generator": "^1.0.4",
     "morgan": "^1.8.1",
+    "multer": "^1.3.0",
+    "numeral": "^2.0.6",
     "pug": "^2.0.0-beta11",
     "response-time": "^2.3.2",
     "serve-favicon": "^2.4.2",
-    "serve-static": "^1.12.1"
-  },
-  "site_title": "Awesome",
-  "site_description": "A free alternative for e-commerce using Node.js",
-  "theme": "venus"
+    "serve-static": "^1.12.1",
+    "slug": "^0.9.1"
+  }
 }

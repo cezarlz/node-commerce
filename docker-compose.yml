@@ -1,19 +1,23 @@
 version: "3"
 
 services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
   app:
     build: .
     volumes:
       - ./app/:/src/
+      - ./app/node_modules/:/src/node_modules/
     environment:
-      PORT: 3000
-    ports:
-      - 3000:3000
-    depends_on:
-      - mongo
+      VIRTUAL_HOST: localhost
     links:
       - mongo
-    restart: on-failure
 
   mongo:
     image: mongo:3

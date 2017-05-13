@@ -1,0 +1,36 @@
+block vars
+
+doctype html
+html(lang="en-us")
+  head
+    block head_meta
+      meta(charset="utf-8")
+      meta(http-equiv="X-UA-Compatible" content="IE=edge")
+      meta(name="viewport" content="width=device-width, initial-scale=1")
+      title= `NC Admin - ${title || 'Home'}`
+
+    // CSS
+    block head_css
+      link(href="/admin/css/bootstrap.css" rel="stylesheet")
+      link(href="/admin/css/style.css" rel='stylesheet')
+    
+    block head_js
+
+    block head
+
+  body
+    .container
+      block content
+
+    block footer
+
+    block footer_js
+      != loadPlugin('jquery').js
+      != loadPlugin('bootstrap').js
+      
+      if flash.length
+        script.
+          var flashes = !{JSON.stringify(flash)};
+        != loadJs('flash.js')
+
+    != loadJs('main.js')

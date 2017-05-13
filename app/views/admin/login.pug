@@ -1,0 +1,23 @@
+extends partials/layout
+
+block vars
+  - var title = 'Login'
+
+block content
+  section.page-section.page-login
+    .box.box--small
+      form(action="/admin/login" method="post").container-fluid.form-login
+        .form-group
+          label Username
+          input(name="username" type="text" required).form-control
+
+        .form-group
+          label Password
+          input(name="password" type="password" minlength="6" required).form-control
+
+        .clearfix
+          a(href="/admin/recover-password").pull-left Lost your password?
+          button(type="submit").btn.btn-primary.pull-right Log In
+        
+          
+      

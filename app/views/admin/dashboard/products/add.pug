@@ -1,0 +1,139 @@
+extends ../partials/layout
+
+block append head_css
+  != loadPlugin('wyswyg').css
+  != loadPlugin('multiselect').css
+  != loadPlugin('fileuploader').css
+
+block append footer_js
+  != loadPlugin('wyswyg').js
+  != loadPlugin('multiselect').js
+  != loadPlugin('fileuploader').js
+
+block content
+  header.content-header
+    .row
+      .col-xs-12
+        h3 Add new product
+
+  section.content-section.box.box--full
+    form(action="/admin/dashboard/add" method="post" enctype="multipart/form-data")
+      input(type="hidden" name="type" value="products")
+
+      .form-group
+        label Product Name
+        input(type="text" name="title" required).form-control.input-lg
+      
+      .form-group
+        label Content
+        div(data-name="content").wyswyg
+      
+      .form-group
+        .row
+          .col-xs-6
+            label Price
+            .input-group
+              span.input-group-addon R$
+              input(type="text" min="1" name="price" required).form-control
+          .col-xs-6
+            label Sale Price
+            .input-group
+              span.input-group-addon R$
+              input(type="text" min="1" name="sale_price").form-control
+
+      .form-group
+        label Categories
+        select(name="categories" multiple).form-control
+          option(name="pants") Pants
+          option(name="kids") Kids
+          option(name="women") Women
+      
+      hr.separator
+      
+      h3 Stock
+      
+      .form-group
+        label SKU
+        input(type="text" name="stock[sku]").form-control
+      
+      .form-group
+        .row
+          .col-xs-6
+            label Status
+            select(name="stock[status]").form-control
+              option(value="instock" selected) In Stock
+              option(value="outofstock") Out of Stock
+          .col-xs-6
+            label Quantity
+            input(type="number" name="stock[qty]" min="0" step="1").form-control
+      
+      hr.separator
+
+      h3 Shipping
+
+      .form-group
+        label Weight (kg)
+        input(type="text" name="ship[weight]").form-control
+      
+      .form-group
+        .row
+          .col-xs-12.col-sm-4
+            label Length
+            input(type="text" name="ship[dimensions][length]").form-control
+
+          .col-xs-12.col-sm-4
+            label Widht
+            input(type="text" name="ship[dimensions][width]").form-control
+          
+          .col-xs-12.col-sm-4
+            label Height
+            input(type="text" name="ship[dimensions][height]").form-control
+      
+      hr.separator
+
+      .form-group
+        label Attributes
+        textarea(name="attributes" placeholder="Colors | Red, Blue, Green").form-control
+
+      .form-group
+        label Note
+        textarea(name="note").form-control
+
+      hr.separator
+
+      .form-group
+        label Product Cover
+        input(
+          type="file"
+          name="cover"
+          data-fileuploader-limit="1"
+        ).image-upload
+      
+      .form-group
+        label Product Gallery
+        input(
+          type="file"
+          name="gallery"
+          data-fileuploader-limit="8"
+        ).image-upload
+          
+      .row
+        .col-sm-3
+          .checkbox
+            label 
+              input(type="checkbox" name="sold_individually" value="yes")
+              | Sold Individually?
+            p.help-block Enable to allow only one item of this product to be purchased per order.
+        .col-sm-3
+          .checkbox
+            label 
+              input(type="checkbox" name="reviews_allowed" value="yes" checked)
+              | Reviews allowed?
+        .col-sm-3
+          .pull-right
+            select(name="status").form-control
+              option(value="published") Public
+              option(value="private") Private
+              option(value="draft") Draft
+        .col-sm-3
+          button(type="submit").btn.btn-primary.btn-block Submit

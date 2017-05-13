@@ -1,0 +1,21 @@
+extends ../partials/layout
+
+block content
+  header.content-header
+    .row
+      .col-xs-12.col-sm-6
+        h3 Orders 
+          a(href="/admin/dashboard/add?type=orders").btn.btn-info.btn-xs Add Order
+
+      .col-xs-12.col-sm-6
+        form(action="/admin/dashboard/edit?type=orders" method="get").form-inline.pull-right.search-box
+          .form-group
+            input(type="search" name="title").form-control.input-sm
+          
+          button(type="submit").btn.btn-default.btn-sm Search Orders
+
+  section.content-section
+    if data.docs.length
+      include items
+    else
+      include not-found

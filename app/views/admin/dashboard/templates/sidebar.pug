@@ -1,0 +1,25 @@
+aside#sidebar.sidebar
+  ul.nav.nav-pills.nav-stacked
+    != adminMenuItem('Home', '/admin/dashboard', 'home')
+
+    != adminMenuDivider()
+
+    != adminMenuItem('Orders', '/admin/dashboard/list?type=orders', 'file')
+    != adminMenuItem('Products', '/admin/dashboard/list?type=products', 'star')
+    != adminMenuItem('Coupons', '/admin/dashboard/list?type=coupons', 'tags')
+    != adminMenuItem('Pages', '/admin/dashboard/list?type=pages', 'file')
+    != adminMenuItem('Categories', '/admin/dashboard/list?type=categories', 'th')
+    != adminMenuItem('Media', '/admin/dashboard/list?type=media', 'upload')
+    != adminMenuItem('Comments', '/admin/dashboard/list?type=comments', 'comment')
+    
+
+    != adminMenuDivider()
+
+    != adminMenuItem('Plugins', '/admin/dashboard/plugins', 'magnet')
+    != adminMenuItem('Themes', '/admin/dashboard/themes', 'sunglasses')
+    
+    != adminMenuDivider()
+
+    != adminMenuItem('Users', '/admin/dashboard/users', 'user')
+    != adminMenuItem('Settings', '/admin/dashboard/settings', 'cog')
+    != adminMenuItem('Logout', '/admin/logout', 'log-out')

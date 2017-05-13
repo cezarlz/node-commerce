@@ -1,0 +1,51 @@
+block vars
+  - var pager = false
+
+doctype html
+html(lang="en-us")
+  head
+    block head_meta
+      meta(charset="utf-8")
+      meta(http-equiv="X-UA-Compatible" content="IE=edge")
+      meta(name="viewport" content="width=device-width, initial-scale=1")
+      title=`Dashboard - ${title || 'Home'} | NC Admin`
+
+    // CSS
+    block head_css
+      != loadPlugin('bootstrap').css
+      != loadCss('style.css')
+    
+    block head_js
+
+    block head
+
+  body(class=bodyClass())
+    #dashboard
+      .container-fluid
+        .row
+          .col-xs-12.col-sm-2
+            include ../templates/sidebar
+
+          .col-xs-12.col-sm-10
+            .content
+              .content-flash
+
+              block content
+
+              if pager
+                footer.content-footer
+                  != adminPagination(data)
+
+    block footer
+      
+
+    block footer_js
+      != loadPlugin('jquery').js
+      != loadPlugin('bootstrap').js
+      
+      if flash.length
+        script.
+          var flashes = !{JSON.stringify(flash)};
+        != loadJs('flash.js')
+
+    != loadJs('main.js')

@@ -1,5 +1,7 @@
 'use strict';
 
+require('module-alias/register');
+require('better-log/install');
 require('dotenv').config();
 
 /**
@@ -8,7 +10,8 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const server = express();
-const db = require('./db');
+const db = require('@db');
+const config = require('@config');
 
 const helmet = require('helmet');
 const responseTime = require('response-time');
@@ -16,25 +19,9 @@ const morgan = require('morgan');
 const cookie = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-
-/**
- * Controllers
- */
-const envController = require('./controllers/env');
-// const authController = require('./controllers/auth');
-
-/**
- * Helpers
- */
-const helpers = require('./helpers/helpers');
-const configs = require('./helpers/configs');
-
-/**
- * Routers
- */
-const siteRouter = require('./routers/site');
-const adminRouter = require('./routers/admin');
+const locals = require('@middlewares/locals');
+const flash = require('@middlewares/flash');
+const settings = require('@middlewares/settings');
 
 /**
  * Middlewares
@@ -45,13 +32,18 @@ server.use(morgan('tiny'));
 server.use(cookie());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
-server.use(session({ 
-  secret: '1a24eec8-44c1-4757-b902-5aace4b88e30', 
+server.use(session({
+  secret: config.secret.key,
+  name: config.secret.name,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: true }
+  cookie: {
+    httpOnly: true,
+    expires: new Date(Date.now() + 2 * 60 * 60 * 1000)
+  }
 }));
-server.use(helpers);
+server.use(locals);
+server.use(flash);
 
 /**
  * Setters
@@ -61,25 +53,27 @@ server.set('view engine', 'pug');
 server.set('root', __dirname);
 
 /**
+ * Disable
+ */
+server.disable('x-powered-by');
+
+/**
  * Routes
  */
-server.use('/nc-admin', express.static(path.resolve(__dirname, './views/nc-admin/assets')));
-server.use((req, res, next) => {
-  const c = configs.getConfigs();
-  
-  const isInstalled = (c.site_title || c.site_description || c.theme);
+server.use('/uploads', express.static(path.resolve(__dirname, './uploads')));
+server.use('/admin', express.static(path.resolve(__dirname, './views/admin/assets')));
 
-  if (!res.locals.isInstall() && !isInstalled) {
-    return res.redirect('/nc-admin/install');
-  }
+/**
+ * Routers
+ */
+const clientRouter = require('@server/client/router');
+const adminRouter = require('@server/admin/router');
 
-  next();
-});
-
-server.use('/nc-admin', adminRouter);
-server.use('/', siteRouter);
+server.use(settings);
+server.use('/admin', adminRouter);
+server.use('/', clientRouter);
 
 /**
  * Run app, run!
  */
-server.listen(process.env.PORT || 3000);
+server.listen(config.port);

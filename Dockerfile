@@ -4,14 +4,15 @@ MAINTAINER Cezar Luiz <cezarluiz.c@gmail.com>
 
 ENV NODE_ENV development
 
-# RUN apk update && apk COPY g++ make python build-base
-RUN npm install pm2 -g
+RUN npm install pm2 -g --silent
+RUN apk add --no-cache curl bash tar
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash
 
-RUN mkdir /src
+RUN mkdir -p /src
 WORKDIR /src
 
 COPY app/package.json .
-RUN npm install
+RUN yarn
 COPY app/ .
 
 EXPOSE 3000
