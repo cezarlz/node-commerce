@@ -1,8 +1,8 @@
 'use strict';
 
+const themes = require('@helpers/themes');
 const express = require('express');
 const router = express.Router();
-const themes = require('@helpers/themes');
 
 // Controllers
 const AdminController = require('./controller');
@@ -18,8 +18,13 @@ router.get('/install', async (req, res) => {
     return res.render(`admin/install-error`);
   }
 
+  if (res.locals.settings) {
+    return res.redirect('/admin/login');
+  }
+
   return res.render('admin/install', {
-    themes: await themes.getThemes()
+    themes: await themes.getThemes(),
+    data: {}
   });
 });
 
@@ -30,9 +35,13 @@ router.post('/install', async (req, res) => {
     return res.redirect('/admin/login');
   }
   catch (e) {
-    req.flash.set(e);
+    req.flash(e);
 
-    return res.redirect('/admin/install');
+    return res.render('admin/install', {
+      themes: await themes.getThemes(),
+      data: req.body,
+      flash: req.flash()
+    });
   }
 });
 
@@ -46,35 +55,35 @@ router.get('/login', (req, res) => {
   if (status) {
     switch (status) {
       case '400':
-        req.flash.create({
+        req.flash({
           message: Flash.FLASH_MESSAGES.INVALID_USERNAME_PASSWORD,
           target: '.form-login',
           type: Flash.FLASH_TYPES.ALERT_ERROR
         });
         break;
       case '401':
-        req.flash.create({
+        req.flash({
           message: Flash.FLASH_MESSAGES.NOT_AUTHORIZED,
           target: '.form-login',
           type: Flash.FLASH_TYPES.ALERT_ERROR
         });
         break;
       case '429':
-        req.flash.create({
+        req.flash({
           message: Flash.FLASH_MESSAGES.MAX_LOGIN_ATTEMPT,
           target: '.form-login',
           type: Flash.FLASH_TYPES.ALERT_WARNING
         });
         break;
       case 'logout':
-        req.flash.create({
+        req.flash({
           message: Flash.FLASH_MESSAGES.LOGOUT,
           target: '.form-login',
           type: Flash.FLASH_TYPES.ALERT_INFO
         });
         break;
       default:
-        req.flash.create({
+        req.flash({
           message: Flash.FLASH_MESSAGES.GENERAL,
           target: '.form-login',
           type: Flash.FLASH_TYPES.ALERT_ERROR

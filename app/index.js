@@ -66,8 +66,8 @@ server.use('/admin', express.static(path.resolve(__dirname, './views/admin/asset
 /**
  * Routers
  */
-const clientRouter = require('@server/client/router');
 const adminRouter = require('@server/admin/router');
+const clientRouter = require('@server/client/router');
 
 server.use(settings);
 server.use('/admin', adminRouter);

@@ -9,30 +9,52 @@ const Settings = function (settings = null) {
 };
 
 Settings.prototype.create = async function (data = {}) {
-  this.settings = Object.assign({}, this.settings, data);
-
   try {
-    const settings = new SettingsModel(this.settings);
+    // Find existent setting
+    let settings = await SettingsModel.findOne({});
+
+    if (!settings) settings = new SettingsModel(Object.assign({}, this.settings, data));
+
+    await settings.validate();
 
     await settings.save();
 
     this.settings = settings;
   }
   catch (e) {
-    console.log('%j', e);
+    return Promise.reject(e);
+  }
+};
+
+Settings.prototype.update = async function (data = {}) {
+  try {
+    let settings = await SettingsModel.findOne({});
+
+    settings = Object.assign({}, settings, data);
+
+    await settings.validate();
+
+    await settings.save();
+
+    this.settings = settings;
+
+    return settings;
+  }
+  catch (e) {
+    return Promise.reject(e);
   }
 };
 
 Settings.prototype.get = async function () {
   try {
-    const settings = await SettingsModel.findOne();
+    const settings = await SettingsModel.findOne({});
 
     if (settings) this.settings = settings;
 
     return settings;
   }
   catch (e) {
-    console.log('%j', e);
+    return Promise.reject(e);
   }
 };
 
@@ -45,7 +67,7 @@ Settings.prototype.hasSettings = async function () {
     return true;
   }
   catch (e) {
-    console.log('%j', e);
+    return Promise.reject(e);
   }
 };
 

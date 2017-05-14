@@ -7,9 +7,9 @@ const configs = require('@helpers/configs');
 const themes = require('@helpers/themes');
 const Flash = require('@helpers/flash');
 
-// Models
-const User = require('@server/users/controller');
-const Settings = require('@server/settings/controller');
+// Controllers
+const UserController = require('@server/users/controller');
+const SettingsController = require('@server/settings/controller');
 
 const Admin = function () { };
 
@@ -30,19 +30,20 @@ Admin.prototype.createInstallation = async function (site) {
     if (data.source.user_password_repeat !== data.source.user_password) {
       throw new Flash({
         message: Flash.FLASH_MESSAGES.PASSWORDS_DOESNT_MATCH,
-        name: 'user_password_repeat'
+        name: 'user_password_repeat',
+        type: Flash.FLASH_TYPES.ALERT_INPUT
       });
     }
 
     // Create the user
-    const admin = new User({
+    const admin = new UserController({
       email: data.source.user_email,
       username: data.source.user_login,
       password: data.source.user_password,
       role: 'administrator'
     });
 
-    const settings = new Settings({
+    const settings = new SettingsController({
       site_name: data.source.site_title,
       site_description: data.source.site_description,
       site_theme: data.source.theme
@@ -53,9 +54,6 @@ Admin.prototype.createInstallation = async function (site) {
     return { admin, settings };
 
   } catch (e) {
-    console.log('admin controller error');
-    console.log('%j', e.errors);
-
     return Promise.reject(e);
   }
 };
@@ -144,7 +142,7 @@ const doLogin = async function (req, res) {
 
     const { username, password } = data.source;
 
-    const user = await User.findByCredentials(username, password);
+    const user = await UserController.findByCredentials(username, password);
 
     // Create the user session
     req.session.user = {

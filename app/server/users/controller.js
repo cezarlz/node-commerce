@@ -1,5 +1,7 @@
 'use strict';
 
+const Flash = require('@helpers/flash');
+
 const UserModel = require('./model');
 
 const User = function (user = null) {
@@ -7,10 +9,10 @@ const User = function (user = null) {
 };
 
 User.prototype.create = async function (data = {}) {
-  this.user = Object.assign({}, this.user, data);
-
   try {
-    const user = new UserModel(this.user);
+    const user = new UserModel(Object.assign({}, this.user, data));
+
+    await user.validate();
 
     await user.save();
 
@@ -19,9 +21,6 @@ User.prototype.create = async function (data = {}) {
     return user;
   }
   catch (e) {
-    console.log('user create error');
-    console.log('%j', e);
-
     return Promise.reject(e);
   }
 };
@@ -42,7 +41,7 @@ User.getUser = function (username, password, done) {
         case reasons.PASSWORD_INCORRECT:
           return done(null, false);
         case reasons.MAX_ATTEMPTS:
-          return done(null, false, { message: 'You tried to login 5 times. Please, try again until 2 hours.' });
+          return done(null, false, { message: Flash.FLASH_MESSAGES.MAX_LOGIN_ATTEMPT });
       }
     }
   );

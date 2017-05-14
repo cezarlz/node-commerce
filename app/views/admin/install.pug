@@ -11,21 +11,23 @@ block content
           h3 Informations
           p You can change these informations later.
 
+          .content-flash
+
         .row
           .form-group
             label.col-sm-4.control-label Site Title
             .col-sm-8
-              input(name="site_title" type="text" required).form-control
+              input(name="site_title" type="text" value=data.site_title required).form-control
 
           .form-group
             label.col-sm-4.control-label Site Description
             .col-sm-8
-              input(name="site_description" maxlength="160" type="text").form-control
+              input(name="site_description" maxlength="160" type="text" value=data.site_description).form-control
 
           .form-group
             label.col-sm-4.control-label Username
             .col-sm-8
-              input(name="user_login" type="text" required).form-control
+              input(name="user_login" type="text" value=data.user_login required).form-control
               small You will use this username for future logins.
 
           .form-group
@@ -41,7 +43,7 @@ block content
           .form-group
             label.col-sm-4.control-label E-mail
             .col-sm-8
-              input(name="user_email" type="email" placeholder="e.g.: email@example.com").form-control
+              input(name="user_email" type="email" placeholder="e.g.: email@example.com" value=data.user_email).form-control
 
           .form-group
             label.col-sm-4.control-label Theme

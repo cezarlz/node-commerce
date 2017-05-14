@@ -9,9 +9,10 @@ module.exports = (req, res, next) => {
 
   res.locals.flash = req.session.flash = flash.list();
 
-  req.flash = {
-    set: flash.set.bind(flash),
-    create: flash.create.bind(flash)
+  req.flash = function (error = null) {
+    if (!error) return flash.list();
+
+    return flash.create(error);
   };
 
   next();

@@ -5,15 +5,18 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const configs = require('@helpers/configs');
+const SettingsController = require('@server/settings/controller');
+
+
 
 // Set path of static resources
 router.use(express.static(path.resolve(__dirname, `../../views/themes/`)));
 
 router.use((req, res, next) => {
-  const c = configs.getConfigs();
-  
+  const { site_theme } = res.locals.settings;
+
   // Set the theme activated
-  res.locals.theme = `themes/${c.theme}`;
+  res.locals.theme = `themes/${site_theme}`;
 
   next();
 });
@@ -103,7 +106,7 @@ router.use((err, req, res, next) => {
         `);
     }
   }
-  
+
   next(err);
 });
 

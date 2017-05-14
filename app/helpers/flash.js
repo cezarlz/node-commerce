@@ -1,6 +1,7 @@
 'use strict';
 
 const clone = require('clone');
+const type = require('type-detect');
 
 const FLASH_MESSAGES = {
   INVALID_USERNAME_PASSWORD: 'Invalid username or password. Please try again.',
@@ -20,22 +21,74 @@ const FLASH_TYPES = {
   ALERT_INPUT: 'help-block'
 };
 
-const defaultError = { message: null, type: FLASH_TYPES.ALERT_ERROR, target: '.content-flash' };
-
-const Flash = function (error = defaultError) {
+const Flash = function (error = null) {
   this.errors = [];
+  this.defaults = {
+    target: '.content-flash',
+    type: Flash.FLASH_TYPES.ALERT_ERROR
+  };
 
-  if (error.message) {
-    this.create(Object.assign({}, defaultError, error));
+  if (error) {
+    this.create(error);
   }
 };
 
-Flash.prototype.set = function (errors = []) {
-  this.errors = errors;
-}
+Flash.prototype.create = function (error = null) {
+  if (!error) return;
 
-Flash.prototype.create = function (error) {
-  this.errors.push(error);
+  if (this.detect('mongoose', error)) {
+    for (let key in error.errors) {
+      this.errors.push({
+        message: error.errors[key].message,
+        target: '.content-flash',
+        type: Flash.FLASH_TYPES.ALERT_ERROR
+      })
+    };
+
+    return;
+  }
+
+  if (this.detect('boss', error)) {
+    return error.forEach(err => {
+      this.errors.push({
+        message: err.message,
+        name: err.name,
+        type: Flash.FLASH_TYPES.ALERT_INPUT
+      });
+    });
+  }
+
+  if (this.detect('Flash', error)) {
+    return this.errors = error.errors;
+  }
+
+  if (this.detect('object', error) || this.detect('Error', error)) {
+    return this.errors.push({
+      message: error.message,
+      name: error.name || null,
+      type: error.type || this.defaults.type,
+      target: error.target || this.defaults.target
+    });
+  }
+
+  throw new Error('Flash: Failed to create a new error!');
+};
+
+Flash.prototype.detect = function (lib, error) {
+  switch (lib) {
+    case 'mongoose':
+      return type(error.errors).toLocaleLowerCase() === 'object' && error.name === 'ValidationError';
+    case 'boss':
+      return Array.isArray(error);
+    case 'Flash':
+      return error instanceof Flash;
+    case 'object':
+      return type(error).toLowerCase() === 'object' && type(error.message).toLowerCase() === 'string';
+    case 'Error':
+      return type(error) === 'Error';
+  }
+
+  return false;
 };
 
 Flash.prototype.list = function () {
@@ -50,9 +103,7 @@ Flash.prototype.reset = function () {
   this.errors = [];
 };
 
-Flash.FLASH_MESSAGES = FLASH_MESSAGES;
-
 Flash.FLASH_TYPES = FLASH_TYPES;
-
+Flash.FLASH_MESSAGES = FLASH_MESSAGES;
 
 module.exports = Flash;
