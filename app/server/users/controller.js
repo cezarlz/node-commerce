@@ -34,7 +34,7 @@ User.getUser = function (username, password, done) {
 
       if (user) return done(null, user);
 
-      const reasons = UserModel.failedLogin;
+      const reasons = User.FAILED_LOGIN;
 
       switch (reason) {
         case reasons.NOT_FOUND:
@@ -46,5 +46,16 @@ User.getUser = function (username, password, done) {
     }
   );
 };
+
+User.findByCredentials = async function (username, password) {
+  try {
+    return await UserModel.findByCredentials(username, password);
+  }
+  catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+User.FAILED_LOGIN = UserModel.failedLogin;
 
 module.exports = User;

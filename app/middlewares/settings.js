@@ -3,10 +3,6 @@
 const SettingsController = require('@server/settings/controller');
 
 module.exports = async (req, res, next) => {
-  if (res.locals.isInstall()) {
-    return next();
-  }
-
   try {
     if (req.session.settings) {
       res.locals.settings = req.session.settings;
@@ -16,7 +12,7 @@ module.exports = async (req, res, next) => {
     const settings = new SettingsController();
     const hasSettings = await settings.hasSettings();
 
-    if (!hasSettings) {
+    if (!hasSettings && !res.locals.isInstall()) {
       return res.redirect('/admin/install');
     }
 

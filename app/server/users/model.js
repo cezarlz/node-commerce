@@ -101,7 +101,6 @@ const findByCredentials = function (username, password) {
 
       // check if the account is currently locked
       if (user.isLocked) {
-        console.log(Date.now());
         // just increment login attempts if account is already locked
         return user.incLoginAttempts(function (err) {
           if (err) return reject({ err });

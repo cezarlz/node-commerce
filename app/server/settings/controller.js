@@ -58,6 +58,21 @@ Settings.prototype.get = async function () {
   }
 };
 
+Settings.prototype.getField = async function (field = null) {
+  try {
+    const settings = await this.get();
+
+    if (settings && !field) return settings;
+
+    if (settings[field]) return settings[field];
+
+    return settings;
+  }
+  catch (e) {
+    return Promise.reject(e);
+  }
+};
+
 Settings.prototype.hasSettings = async function () {
   try {
     const settings = await this.get();

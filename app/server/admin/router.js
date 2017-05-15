@@ -52,51 +52,30 @@ router.get('/login', (req, res) => {
     return res.redirect('/admin/dashboard');
   }
 
-  if (status) {
-    switch (status) {
-      case '400':
-        req.flash({
-          message: Flash.FLASH_MESSAGES.INVALID_USERNAME_PASSWORD,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_ERROR
-        });
-        break;
-      case '401':
-        req.flash({
-          message: Flash.FLASH_MESSAGES.NOT_AUTHORIZED,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_ERROR
-        });
-        break;
-      case '429':
-        req.flash({
-          message: Flash.FLASH_MESSAGES.MAX_LOGIN_ATTEMPT,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_WARNING
-        });
-        break;
-      case 'logout':
-        req.flash({
-          message: Flash.FLASH_MESSAGES.LOGOUT,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_INFO
-        });
-        break;
-      default:
-        req.flash({
-          message: Flash.FLASH_MESSAGES.GENERAL,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_ERROR
-        });
-        break;
-    }
-  }
-
   return res.render(`admin/login`);
 });
 
-// router.post('/login', Admin.doLogin);
+router.post('/login', async (req, res) => {
+  let errors = [];
 
-// router.get('/logout', Admin.doLogout);
+  try {
+    const authUser = await admin.authenticate(req.body.username, req.body.password);
+
+    req.session.user = authUser;
+
+    return res.redirect(`/admin/dashboard`);
+  } catch (e) {
+    req.flash(e);
+
+    return res.redirect(`/admin/login`);
+  }
+});
+
+router.get('/logout', async (req, res) => {
+  // Destroy session
+  await req.session.destroy();
+
+  return res.redirect('/admin/login?status=logout');
+});
 
 module.exports = router;

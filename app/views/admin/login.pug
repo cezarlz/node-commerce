@@ -7,13 +7,15 @@ block content
   section.page-section.page-login
     .box.box--small
       form(action="/admin/login" method="post").container-fluid.form-login
+        .content-flash
+        
         .form-group
           label Username
           input(name="username" type="text" required).form-control
 
         .form-group
           label Password
-          input(name="password" type="password" minlength="6" required).form-control
+          input(name="password" type="password" minlength="10" required).form-control
 
         .clearfix
           a(href="/admin/recover-password").pull-left Lost your password?

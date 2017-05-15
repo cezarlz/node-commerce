@@ -5,9 +5,6 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const configs = require('@helpers/configs');
-const SettingsController = require('@server/settings/controller');
-
-
 
 // Set path of static resources
 router.use(express.static(path.resolve(__dirname, `../../views/themes/`)));

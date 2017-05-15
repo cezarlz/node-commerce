@@ -58,123 +58,52 @@ Admin.prototype.createInstallation = async function (site) {
   }
 };
 
-const renderLogin = async function (req, res) {
-  const status = req.query.status;
-
-  if (req.session.user) {
-    return res.redirect('/admin/dashboard');
-  }
-
-  const flash = new Flash();
-
-  if (status) {
-    switch (status) {
-      case '400':
-        flash.create({
-          message: Flash.FLASH_MESSAGES.INVALID_USERNAME_PASSWORD,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_ERROR
-        });
-        break;
-      case '401':
-        flash.create({
-          message: Flash.FLASH_MESSAGES.NOT_AUTHORIZED,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_ERROR
-        });
-        break;
-      case '429':
-        flash.create({
-          message: Flash.FLASH_MESSAGES.MAX_LOGIN_ATTEMPT,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_WARNING
-        });
-        break;
-      case 'logout':
-        flash.create({
-          message: Flash.FLASH_MESSAGES.LOGOUT,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_INFO
-        });
-        break;
-      default:
-        flash.create({
-          message: Flash.FLASH_MESSAGES.GENERAL,
-          target: '.form-login',
-          type: Flash.FLASH_TYPES.ALERT_ERROR
-        });
-        break;
-    }
-  }
-
-  res.locals.flash = flash.list();
-
-  return res.render(`admin/login`);
-};
-
-const renderDashboardIndex = function (req, res) {
-  return res.render(`admin/dashboard/index`);
-};
-
-const doLogout = async function (req, res) {
-  // Destroy session
-  await req.session.destroy();
-
-  return res.redirect('/admin/login?status=logout');
-};
-
-const doInstall = async function (req, res) {
-
-};
-
-const doLogin = async function (req, res) {
-  let errors = [];
-  let status;
-
+Admin.prototype.authenticate = async function (username, password) {
   try {
-    const data = await boss.validate(req.body, {
+    const data = await boss.validate({ username, password }, {
       username: { required: true },
       password: {
         required: true,
-        minlength: 6
+        minlength: 10
       }
     });
 
-    const { username, password } = data.source;
-
     const user = await UserController.findByCredentials(username, password);
 
-    // Create the user session
-    req.session.user = {
+    return {
       name: user.display_name,
       email: user.email,
       avatar: user.avatar_url,
       role: user.role
     };
+  }
+  catch (e) {
+    let error = e;
 
-    return res.redirect(`/admin/dashboard`);
-
-  } catch (reject) {
-    if (reject.err) {
-      status = '500';
-    }
-
-    if (reject.reason >= 0) {
-      const reasons = User.failedLogin;
-
-      switch (reject.reason) {
-        case reasons.NOT_FOUND:
-        case reasons.PASSWORD_INCORRECT:
-          status = '400';
+    if (e.reason >= 0) {
+      switch (e.reason) {
+        case UserController.FAILED_LOGIN.NOT_FOUND:
+        case UserController.FAILED_LOGIN.PASSWORD_INCORRECT:
+          error = {
+            message: Flash.FLASH_MESSAGES.INVALID_USERNAME_PASSWORD,
+          };
           break;
 
-        case reasons.MAX_ATTEMPTS:
-          status = '429';
+        case UserController.FAILED_LOGIN.MAX_ATTEMPTS:
+          error = {
+            message: Flash.FLASH_MESSAGES.MAX_LOGIN_ATTEMPT,
+          };
+          break;
+
+        case UserController.FAILED_LOGIN.GENERAL_ERROR:
+          error = {
+            message: Flash.FLASH_MESSAGES.GENERAL,
+          };
           break;
       }
     }
 
-    return res.redirect(`/admin/login?status=${status}`);
+    return Promise.reject(new Flash(error));
   }
 };
 
