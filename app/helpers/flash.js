@@ -10,7 +10,10 @@ const FLASH_MESSAGES = {
   GENERAL: 'An error occurred... Could you please try again?',
   LOGOUT: 'You have successfully logged out.',
   SALE_PRICE_BIGGER_PRICE: 'Sale price cannot be smaller than price.',
-  PASSWORDS_DOESNT_MATCH: `The passwords are wrong. Did you type correctly?`
+  PASSWORDS_DOESNT_MATCH: `The passwords are wrong. Did you type correctly?`,
+  // Bus
+  HELPERS_BUS_TAG_NOT_FOUND: `The parameter "tag" is required and must be a string.`,
+  HELPERS_BUS_CALLBACK_NOT_FUNCTION: `The parameter "callback" must be a function.`
 };
 
 const FLASH_TYPES = {

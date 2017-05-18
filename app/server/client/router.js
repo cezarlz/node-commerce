@@ -5,48 +5,64 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const configs = require('@helpers/configs');
+const bus = require('@helpers/bus');
 
 // Set path of static resources
 router.use(express.static(path.resolve(__dirname, `../../views/themes/`)));
 
 router.use((req, res, next) => {
-  const { site_theme } = res.locals.settings;
+  bus.publish(`seller.client.init`, { req, res });
 
-  // Set the theme activated
-  res.locals.theme = `themes/${site_theme}`;
-
-  next();
+  return next();
 });
 
 /**
  * Gets
  */
 router.get('/', async (req, res) => {
-  res.render(`${res.locals.theme}/index`);
+  bus.publish('seller.client.loadPage.home', { req, res });
+
+  return res.render(`${res.locals.theme}/index`);
 });
 
 router.get('/cart', (req, res) => {
-  res.render(`${res.locals.theme}/cart`);
+  bus.publish('seller.client.loadPage.cart', { req, res });
+
+  return res.render(`${res.locals.theme}/cart`);
 });
 
 router.get('/checkout', (req, res) => {
-  res.render(`${res.locals.theme}/checkout`);
+  bus.publish('seller.client.loadPage.checkout', { req, res });
+
+  return res.render(`${res.locals.theme}/checkout`);
 });
 
 router.get('/order/:id', (req, res) => {
-  res.render(`${res.locals.theme}/order`);
+  bus.publish(`seller.client.loadPage.order`, { req, res });
+  bus.publish(`seller.client.loadPage.order:${req.params.id}`, { req, res });
+
+  return res.render(`${res.locals.theme}/order`);
 });
 
 router.get('/product/:slug', (req, res) => {
-  res.render(`${res.locals.theme}/product`);
+  bus.publish('seller.client.loadPage.product', { req, res });
+  bus.publish(`seller.client.loadPage.product:${req.params.slug}`, { req, res });
+
+  return res.render(`${res.locals.theme}/product`);
 });
 
 router.get('/category/:category', (req, res) => {
-  res.render(`${res.locals.theme}/category`);
+  bus.publish('seller.client.loadPage.category', { req, res });
+  bus.publish(`seller.client.loadPage.category:${req.params.category}`, { req, res });
+
+  return res.render(`${res.locals.theme}/category`);
 });
 
 router.get('/page/:pageSlug', (req, res) => {
-  res.render(`${res.locals.theme}/page`);
+  bus.publish('seller.client.loadPage.page', { req, res });
+  bus.publish(`seller.client.loadPage.page:${req.params.pageSlug}`, { req, res });
+
+  return res.render(`${res.locals.theme}/page`);
 });
 
 /**
@@ -73,6 +89,8 @@ router.use((req, res, next) => {
     return true;
   };
 
+  bus.publish('seller.client.notfound', { req, res });
+
   if (!res.locals.isAdmin()) {
     // 404 Requests
     res
@@ -80,7 +98,7 @@ router.use((req, res, next) => {
       .render(`${res.locals.theme}/404`);
   }
 
-  next();
+  return next();
 });
 
 router.use((err, req, res, next) => {
@@ -92,10 +110,19 @@ router.use((err, req, res, next) => {
         throw new Error('The file index.pug was not found.');
       }
 
-      res.render(`${res.locals.theme}/index`);
+      const page = req.originalUrl
+        .replace(/^\//g, '')
+        .replace(/\//g, '-')
+        .toLowerCase();
+
+      bus.publish(`seller.client.loadPage.${page}`, { req, res });
+
+      return res.render(`${res.locals.theme}/index`);
     }
     catch (e) {
-      res
+      bus.publish(`seller.client.error.notFoundThemeFile`, { err, req, res });
+
+      return res
         .status(500)
         .send(`
           <h1>${e.message}</h1>
@@ -104,7 +131,7 @@ router.use((err, req, res, next) => {
     }
   }
 
-  next(err);
+  return next(err);
 });
 
 module.exports = router;

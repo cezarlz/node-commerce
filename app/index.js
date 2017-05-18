@@ -10,7 +10,9 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const server = express();
+
 const db = require('@db');
+
 const config = require('@config');
 
 const helmet = require('helmet');
@@ -19,9 +21,14 @@ const morgan = require('morgan');
 const cookie = require('cookie-parser');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const glob = require('glob');
+const type = require('type-detect');
+
 const locals = require('@middlewares/locals');
 const flash = require('@middlewares/flash');
 const settings = require('@middlewares/settings');
+
+const bus = require('@helpers/bus');
 
 /**
  * Middlewares
@@ -42,8 +49,6 @@ server.use(session({
     expires: new Date(Date.now() + 2 * 60 * 60 * 1000)
   }
 }));
-server.use(locals);
-server.use(flash);
 
 /**
  * Setters
@@ -58,10 +63,13 @@ server.set('root', __dirname);
 server.disable('x-powered-by');
 
 /**
- * Routes
+ * Custom Middlewares
  */
 server.use('/uploads', express.static(path.resolve(__dirname, './uploads')));
 server.use('/admin', express.static(path.resolve(__dirname, './views/admin/assets')));
+server.use(locals);
+server.use(flash);
+server.use(settings);
 
 /**
  * Routers
@@ -69,7 +77,30 @@ server.use('/admin', express.static(path.resolve(__dirname, './views/admin/asset
 const adminRouter = require('@server/admin/router');
 const clientRouter = require('@server/client/router');
 
-server.use(settings);
+
+// Init
+server.use((req, res, next) => {
+  const { site_theme } = res.locals.settings;
+
+  // Set the theme activated
+  const theme = res.locals.theme = `themes/${site_theme}`;
+
+  // Call function.js theme file
+  glob(path.join(__dirname, `./views/${theme}/functions.js`), (err, file) => {
+    if (file.length) {
+      const functions = require(file[0]);
+
+      if (type(functions).toLowerCase() === 'function') {
+        functions(req, res);
+      }
+    }
+
+    bus.publish('seller.init', { req, res });
+
+    return next();
+  });
+});
+
 server.use('/admin', adminRouter);
 server.use('/', clientRouter);
 

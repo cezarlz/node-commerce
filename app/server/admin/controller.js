@@ -85,19 +85,20 @@ Admin.prototype.authenticate = async function (username, password) {
         case UserController.FAILED_LOGIN.NOT_FOUND:
         case UserController.FAILED_LOGIN.PASSWORD_INCORRECT:
           error = {
-            message: Flash.FLASH_MESSAGES.INVALID_USERNAME_PASSWORD,
+            message: Flash.FLASH_MESSAGES.INVALID_USERNAME_PASSWORD
           };
           break;
 
         case UserController.FAILED_LOGIN.MAX_ATTEMPTS:
           error = {
             message: Flash.FLASH_MESSAGES.MAX_LOGIN_ATTEMPT,
+            type: Flash.FLASH_TYPES.ALERT_WARNING
           };
           break;
 
         case UserController.FAILED_LOGIN.GENERAL_ERROR:
           error = {
-            message: Flash.FLASH_MESSAGES.GENERAL,
+            message: Flash.FLASH_MESSAGES.GENERAL
           };
           break;
       }

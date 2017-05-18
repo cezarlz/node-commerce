@@ -43,4 +43,17 @@
     });
   }
 
+  // Disable button on login
+  $('form button[type="submit"], form input[type="submit"]').on('click', function (e) {
+    e.preventDefault();
+
+    var self = $(this);
+
+    self
+      .attr('disabled', 'disabled')
+      .parents('form')
+      .submit();
+  });
+
+
 })(jQuery);
