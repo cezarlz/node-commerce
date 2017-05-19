@@ -71,7 +71,7 @@ class Helpers {
   }
 
   adminMenuItem(title, href, icon = 'pushpin') {
-    const isActive = (this.req.originalUrl === href || this.req.query.type === title.toLowerCase());
+    const isActive = this.req.originalUrl === href;
 
     const menuItem = `
       li(class="${isActive ? 'active' : ''}")

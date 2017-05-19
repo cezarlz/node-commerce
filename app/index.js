@@ -76,10 +76,13 @@ server.use(settings);
  */
 const adminRouter = require('@server/admin/router');
 const clientRouter = require('@server/client/router');
-
+const dashboardRouter = require('@server/dashboard/router');
+const productsRouter = require('@server/products/router');
 
 // Init
 server.use((req, res, next) => {
+  if (res.locals.isInstall()) return next();
+
   const { site_theme } = res.locals.settings;
 
   // Set the theme activated
@@ -102,6 +105,8 @@ server.use((req, res, next) => {
 });
 
 server.use('/admin', adminRouter);
+server.use('/admin/dashboard', dashboardRouter);
+server.use('/admin/dashboard/products', productsRouter);
 server.use('/', clientRouter);
 
 /**

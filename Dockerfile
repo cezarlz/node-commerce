@@ -11,9 +11,8 @@ RUN curl -o- -L https://yarnpkg.com/install.sh | bash
 RUN mkdir -p /src
 WORKDIR /src
 
-COPY app/package.json .
-RUN yarn
 COPY app/ .
+RUN yarn
 
 EXPOSE 3000
 

@@ -8,10 +8,10 @@ block content
     .row
       .col-xs-12.col-sm-6
         h3 Products 
-          a(href="/admin/dashboard/add?type=products").btn.btn-info.btn-xs Add Product
+          a(href="/admin/dashboard/products/create").btn.btn-info.btn-xs Add Product
 
       .col-xs-12.col-sm-6
-        form(action="/admin/dashboard/edit?type=products" method="get").form-inline.pull-right.search-box
+        form(action="/admin/dashboard/products" method="get").form-inline.pull-right.search-box
           .form-group
             input(type="search" name="title").form-control.input-sm
           
@@ -19,6 +19,6 @@ block content
 
   section.content-section.box.box--full
     if data.docs.length
-      include items
+      include products
     else
       include not-found

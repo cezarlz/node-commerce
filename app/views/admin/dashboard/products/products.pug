@@ -26,9 +26,9 @@ table.table.table-striped.table-hover
           br
           small= formatDate(product.createdAt)
         td
-          a(href=`/admin/dashboard/edit?type=products&id=${product._id}&action=edit` title="Edit" data-toggle="tooltip").btn.btn-link.btn-sm 
+          a(href=`/admin/dashboard/products/${product._id}` title="Edit" data-toggle="tooltip").btn.btn-link.btn-sm 
             span.glyphicon.glyphicon-pencil
-          a(href=`/admin/dashboard/edit?type=products&id=${product._id}&action=delete` title="Delete" data-toggle="tooltip").btn.btn-link.btn-sm
+          a(href=`/admin/dashboard/products/${product._id}?action=delete` title="Delete" data-toggle="tooltip").btn.btn-link.btn-sm
             span.glyphicon.glyphicon-trash
           a(href="#" title="View" data-toggle="tooltip").btn.btn-link.btn-sm
             span.glyphicon.glyphicon-arrow-right

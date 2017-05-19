@@ -9,11 +9,11 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
 
-  app:
+  seller:
     build: .
     volumes:
-      - ./app/:/src/
-      - ./app/node_modules/:/src/node_modules/
+      - ./app:/src
+      - /src/node_modules
     environment:
       VIRTUAL_HOST: localhost
     links:
