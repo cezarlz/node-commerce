@@ -1,31 +1,19 @@
 'use strict';
 
-const boss = require('boss-validator');
 const numeral = require('numeral');
 const Flash = require('@helpers/flash');
 
 // Models
 const ProductModel = require('./model');
 
-const Product = function (product = {}) {
-  this.product = product;
-};
+const Product = {};
 
-Product.prototype.create = async function (product = {}) {
-  this.product = Object.assign({}, this.product, product);
-
+Product.create = async function (product = {}) {
   try {
-    let validate = await boss.validate(this.product, {
-      title: { required: true },
-      status: { required: true },
-      price: { required: true },
-      type: { required: true }
-    });
-
-    let { source } = validate;
+    console.log(product);
 
     // Sale price cannot be bigger than price
-    if (numeral(source.sale_price).value() >= numeral(source.price).value()) {
+    if (numeral(product.sale_price).value() >= numeral(product.price).value()) {
       throw new Flash({
         message: Flash.FLASH_MESSAGES.SALE_PRICE_BIGGER_PRICE,
         type: Flash.FLASH_TYPES.ALERT_INPUT,
@@ -34,34 +22,40 @@ Product.prototype.create = async function (product = {}) {
     }
 
     // Generate attributes
-    source.attributes = generateAttributes(source.attributes);
+    product.attributes = Product.generateProductAttributes(product.attributes);
 
     // Reviews allowed?
-    source.reviews_allowed = source.reviews_allowed === 'yes';
+    product.reviews_allowed = product.reviews_allowed === 'yes';
 
     // Sold individually?
-    source.reviews_allowed = source.sold_individually === 'yes';
+    product.reviews_allowed = product.sold_individually === 'yes';
 
     // Cover
-    source.cover = source.files.cover[0].path;
+    if (product.cover) {
+      product.cover = product.cover[0].path;
+    }
 
     // Galerry
-    source.gallery = source.files['gallery[]'].map(file => {
-      return file.path;
-    });
+    if (product['gallery[]']) {
+      product.gallery = product['gallery[]'].map(file => {
+        return file.path;
+      });
+    }
 
-    let item = new Product(source);
+    let item = new ProductModel(product);
 
     await item.save();
 
     return Promise.resolve(item);
   }
   catch (e) {
-    return Promise.reject(new Flash(e));
+    console.log(e);
+
+    return Promise.reject(e);
   }
 };
 
-Product.prototype.generateAttributes = async function(attributes = null) {
+Product.generateProductAttributes = async function (attributes = null) {
   if (!attributes) return null;
 
   let data = [];
@@ -84,7 +78,7 @@ Product.prototype.generateAttributes = async function(attributes = null) {
   return data;
 };
 
-Product.prototype.find = async function (options = {}, page = 1, limit = 20) {
+Product.find = async function (options = {}, page = 1, limit = 20) {
   try {
     return await ProductModel.paginate(options, { page, limit });
   }
@@ -93,4 +87,7 @@ Product.prototype.find = async function (options = {}, page = 1, limit = 20) {
   }
 };
 
-module.exports = Product;
+module.exports = {
+  create: Product.create,
+  find: Product.find
+};

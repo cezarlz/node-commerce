@@ -1,22 +1,16 @@
 'use strict';
 
-const SettingsController = require('@server/settings/controller');
+const Settings = require('@server/settings/controller');
 
 module.exports = async (req, res, next) => {
   try {
-    if (req.session.settings) {
-      res.locals.settings = req.session.settings;
-      return next();
-    }
-
-    const settings = new SettingsController();
-    const hasSettings = await settings.hasSettings();
+    const hasSettings = await Settings.hasSettings();
 
     if (!hasSettings && !res.locals.isInstall()) {
       return res.redirect('/admin/install');
     }
 
-    res.locals.settings = req.session.settings = settings.settings;
+    res.locals.settings = req.session.settings = await Settings.get();
 
     return next();
   }

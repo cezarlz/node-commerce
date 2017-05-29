@@ -21,6 +21,7 @@ const FLASH_TYPES = {
   ALERT_DANGER: 'alert-danger',
   ALERT_INFO: 'alert-info',
   ALERT_WARNING: 'alert-warning',
+  ALERT_SUCCESS: 'alert-success',
   ALERT_INPUT: 'help-block'
 };
 
@@ -65,7 +66,15 @@ Flash.prototype.create = function (error = null) {
     return this.errors = error.errors;
   }
 
-  if (this.detect('object', error) || this.detect('Error', error)) {
+  if (this.detect('Error', error)) {
+    return this.errors.push({
+      message: error.message,
+      type: this.defaults.type,
+      target: this.defaults.target
+    });
+  }
+
+  if (this.detect('object', error)) {
     return this.errors.push({
       message: error.message,
       name: error.name || null,
@@ -88,7 +97,7 @@ Flash.prototype.detect = function (lib, error) {
     case 'object':
       return type(error).toLowerCase() === 'object' && type(error.message).toLowerCase() === 'string';
     case 'Error':
-      return type(error) === 'Error';
+      return error instanceof Error;
   }
 
   return false;

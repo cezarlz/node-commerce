@@ -1,55 +1,62 @@
 'use strict';
 
 const db = require('@db');
-const boss = require('boss-validator');
 const config = require('@config');
 const configs = require('@helpers/configs');
 const themes = require('@helpers/themes');
 const Flash = require('@helpers/flash');
+const { countries, currencies } = require('country-data');
+const Currency = require('@helpers/currency');
 
 // Controllers
 const UserController = require('@server/users/controller');
 const SettingsController = require('@server/settings/controller');
 
-const Admin = function () { };
+const Admin = {};
 
-Admin.prototype.hasDatabaseConnection = () => (db.connection.readyState !== 1 || !config.db.url);
+Admin.hasDatabaseConnection = () => (db.connection.readyState !== 1 || !config.db.url);
 
-Admin.prototype.createInstallation = async function (site) {
+Admin.createInstallation = async function (site) {
   try {
-    var data = await boss.validate(site, {
-      site_title: { required: true },
-      site_description: { required: true, maxlength: 160 },
-      user_login: { required: true },
-      user_password: { required: true, minlength: 10 },
-      user_password_repeat: { required: true, minlength: 10 },
-      user_email: { required: true, email: true },
-      theme: { required: true }
-    });
-
-    if (data.source.user_password_repeat !== data.source.user_password) {
+    if (site.password_repeat !== site.password) {
       throw new Flash({
         message: Flash.FLASH_MESSAGES.PASSWORDS_DOESNT_MATCH,
-        name: 'user_password_repeat',
+        name: 'password_repeat',
         type: Flash.FLASH_TYPES.ALERT_INPUT
       });
     }
 
+    const currency = currencies[site.currency_code];
+
     // Create the user
-    const admin = new UserController({
-      email: data.source.user_email,
-      username: data.source.user_login,
-      password: data.source.user_password,
+    const admin = await UserController.create({
+      email: site.email,
+      username: site.username,
+      password: site.password,
       role: 'administrator'
     });
 
-    const settings = new SettingsController({
-      site_name: data.source.site_title,
-      site_description: data.source.site_description,
-      site_theme: data.source.theme
+    const settings = await SettingsController.create({
+      name: site.name,
+      description: site.description,
+      theme: site.theme,
+      home_url: site.home_url,
+      store_country: site.store_country,
+      currency_code: site.currency_code,
+      currency_symbol: currency.symbol,
+      ship_weight: site.ship_weight,
+      ship_dimension: site.ship_dimension
     });
 
-    await Promise.all([admin.create(), settings.create()]);
+    Currency.setConfig({
+      currency: {
+        symbol: currency.symbol,
+        precision: currency.decimals
+      },
+      number: {
+        precision: currency.decimals
+      }
+    });
 
     return { admin, settings };
 
@@ -58,7 +65,7 @@ Admin.prototype.createInstallation = async function (site) {
   }
 };
 
-Admin.prototype.authenticate = async function (username, password) {
+Admin.authenticate = async function (username, password) {
   try {
     const data = await boss.validate({ username, password }, {
       username: { required: true },

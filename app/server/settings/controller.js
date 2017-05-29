@@ -4,29 +4,27 @@ const Flash = require('@helpers/flash');
 
 const SettingsModel = require('./model');
 
-const Settings = function (settings = null) {
-  this.settings = settings;
-};
+const Settings = {};
 
-Settings.prototype.create = async function (data = {}) {
+Settings.create = async function (data = {}) {
   try {
     // Find existent setting
     let settings = await SettingsModel.findOne({});
 
-    if (!settings) settings = new SettingsModel(Object.assign({}, this.settings, data));
+    if (!settings) settings = new SettingsModel(data);
 
     await settings.validate();
 
     await settings.save();
 
-    this.settings = settings;
+    return settings;
   }
   catch (e) {
     return Promise.reject(e);
   }
 };
 
-Settings.prototype.update = async function (data = {}) {
+Settings.update = async function (data = {}) {
   try {
     let settings = await SettingsModel.findOne({});
 
@@ -36,8 +34,6 @@ Settings.prototype.update = async function (data = {}) {
 
     await settings.save();
 
-    this.settings = settings;
-
     return settings;
   }
   catch (e) {
@@ -45,22 +41,18 @@ Settings.prototype.update = async function (data = {}) {
   }
 };
 
-Settings.prototype.get = async function () {
+Settings.get = async function () {
   try {
-    const settings = await SettingsModel.findOne({});
-
-    if (settings) this.settings = settings;
-
-    return settings;
+    return await SettingsModel.findOne({});
   }
   catch (e) {
     return Promise.reject(e);
   }
 };
 
-Settings.prototype.getField = async function (field = null) {
+Settings.getField = async function (field = null) {
   try {
-    const settings = await this.get();
+    const settings = await Settings.get();
 
     if (settings && !field) return settings;
 
@@ -73,9 +65,9 @@ Settings.prototype.getField = async function (field = null) {
   }
 };
 
-Settings.prototype.hasSettings = async function () {
+Settings.hasSettings = async function () {
   try {
-    const settings = await this.get();
+    const settings = await Settings.get();
 
     if (!settings) return false;
 

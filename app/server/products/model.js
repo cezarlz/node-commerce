@@ -72,12 +72,16 @@ const schema = {
 };
 
 const preSave = function (next) {
-  // Remove /src from cover and gallery
-  this.cover = this.cover.replace(/\/src/g, '');
+  if (this.cover) {
+    // Remove /src from cover and gallery
+    this.cover = this.cover.replace(/\/src/g, '');
+  }
 
-  this.gallery = this.gallery.map(file => {
-    return file.replace(/\/src/g, '');
-  });
+  if (this.gallery) {
+    this.gallery = this.gallery.map(file => {
+      return file.replace(/\/src/g, '');
+    });
+  }
 
   return next();
 };

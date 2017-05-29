@@ -4,19 +4,15 @@ const Flash = require('@helpers/flash');
 
 const UserModel = require('./model');
 
-const User = function (user = null) {
-  this.user = user;
-};
+const User = {};
 
-User.prototype.create = async function (data = {}) {
+User.create = async function (data = {}) {
   try {
-    const user = new UserModel(Object.assign({}, this.user, data));
+    const user = new UserModel(data);
 
     await user.validate();
 
     await user.save();
-
-    this.user = user;
 
     return user;
   }

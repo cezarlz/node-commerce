@@ -1,14 +1,14 @@
 'use strict';
 
+const boss = require('boss-validator');
 const themes = require('@helpers/themes');
 const express = require('express');
 const router = express.Router();
 const bus = require('@helpers/bus');
+const { countries, currencies } = require('country-data');
 
 // Controllers
 const AdminController = require('./controller');
-
-const admin = new AdminController();
 
 router.get('/', (req, res) => {
   bus.publish(`seller.admin.pageLoad.home`, { req, res });
@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 router.get('/install', async (req, res) => {
   bus.publish(`seller.admin.pageLoad.install`, { req, res });
 
-  if (!admin.hasDatabaseConnection) {
+  if (!AdminController.hasDatabaseConnection) {
     bus.publish(`seller.admin.error.databaseConnection`, { req, res });
 
     return res.render(`admin/install-error`);
@@ -31,7 +31,9 @@ router.get('/install', async (req, res) => {
 
   return res.render('admin/install', {
     themes: await themes.getThemes(),
-    data: {}
+    data: {},
+    countries: countries.all,
+    currencies: currencies.all
   });
 });
 
@@ -39,7 +41,25 @@ router.post('/install', async (req, res) => {
   bus.publish(`seller.admin.before.install`, { req, res });
 
   try {
-    const installation = await admin.createInstallation(req.body);
+    const data = await boss.validate(req.body, {
+      name: { required: true },
+      description: { required: true, maxlength: 160 },
+      username: { required: true },
+      password: { required: true, minlength: 10 },
+      password_repeat: { required: true, minlength: 10 },
+      email: { required: true, email: true },
+      theme: { required: true },
+      store_country: { required: true },
+      currency_code: { required: true },
+      ship_weight: { required: true },
+      ship_dimension: { required: true }
+    });
+
+    const siteInfo = Object.assign({}, data.source, {
+      home_url: res.locals.homeUrl()
+    });
+
+    const installation = await AdminController.createInstallation(siteInfo);
 
     bus.publish(`seller.admin.after.install`, { req, res, installation });
 
@@ -53,7 +73,9 @@ router.post('/install', async (req, res) => {
     return res.render('admin/install', {
       themes: await themes.getThemes(),
       data: req.body,
-      flash: req.flash()
+      flash: req.flash(),
+      countries: countries.all,
+      currencies: currencies.all
     });
   }
 });
@@ -74,7 +96,7 @@ router.post('/login', async (req, res) => {
   bus.publish(`seller.admin.before.login`, { req, res });
 
   try {
-    const authUser = await admin.authenticate(req.body.username, req.body.password);
+    const authUser = await AdminController.authenticate(req.body.username, req.body.password);
 
     bus.publish('seller.admin.after.login', { req, res, user: authUser });
 

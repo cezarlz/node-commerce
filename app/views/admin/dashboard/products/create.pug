@@ -17,12 +17,10 @@ block content
         h3 Add new product
 
   section.content-section.box.box--full
-    form(action="/admin/dashboard/add" method="post" enctype="multipart/form-data")
-      input(type="hidden" name="type" value="products")
-
+    form(action="/admin/dashboard/products/create" method="post" enctype="multipart/form-data")
       .form-group
         label Product Name
-        input(type="text" name="title" required).form-control.input-lg
+        input(type="text" name="title" value=data.title required).form-control.input-lg
       
       .form-group
         label Content
@@ -33,17 +31,17 @@ block content
           .col-xs-6
             label Price
             .input-group
-              span.input-group-addon R$
-              input(type="text" min="1" name="price" required).form-control
+              span.input-group-addon= settings.currency_symbol
+              input(type="text" min="1" name="price" value=data.price required).form-control
           .col-xs-6
             label Sale Price
             .input-group
-              span.input-group-addon R$
-              input(type="text" min="1" name="sale_price").form-control
+              span.input-group-addon= settings.currency_symbol
+              input(type="text" min="1" name="sale_price" value=data.sale_price).form-control
 
       .form-group
         label Categories
-        select(name="categories" multiple).form-control
+        select(name="categories" value=data.categories multiple).form-control
           option(name="pants") Pants
           option(name="kids") Kids
           option(name="women") Women
@@ -54,50 +52,50 @@ block content
       
       .form-group
         label SKU
-        input(type="text" name="stock[sku]").form-control
+        input(type="text" name="stock[sku]" value=data.stock ? data.stock.sku : null).form-control
       
       .form-group
         .row
           .col-xs-6
             label Status
-            select(name="stock[status]").form-control
+            select(name="stock[status]" value=data.stock ? data.stock.status : null).form-control
               option(value="instock" selected) In Stock
               option(value="outofstock") Out of Stock
           .col-xs-6
             label Quantity
-            input(type="number" name="stock[qty]" min="0" step="1").form-control
+            input(type="number" name="stock[qty]" min="0" step="1" value=data.stock ? data.stock.qty : null).form-control
       
       hr.separator
 
       h3 Shipping
 
       .form-group
-        label Weight (kg)
-        input(type="text" name="ship[weight]").form-control
+        label= `Weight (${settings.ship_weight})`
+        input(type="text" name="ship[weight]" value=data.ship ? data.ship.weight : null).form-control
       
       .form-group
         .row
           .col-xs-12.col-sm-4
-            label Length
-            input(type="text" name="ship[dimensions][length]").form-control
+            label= `Length (${settings.ship_dimension})`
+            input(type="text" name="ship[dimensions][length]" value=data.ship ? data.ship.dimensions.length : null).form-control
 
           .col-xs-12.col-sm-4
-            label Widht
-            input(type="text" name="ship[dimensions][width]").form-control
+            label= `Widht (${settings.ship_dimension})`
+            input(type="text" name="ship[dimensions][width]" value=data.ship ? data.ship.dimensions.width : null).form-control
           
           .col-xs-12.col-sm-4
-            label Height
-            input(type="text" name="ship[dimensions][height]").form-control
+            label= `Height (${settings.ship_dimension})`
+            input(type="text" name="ship[dimensions][height]" value=data.ship ? data.ship.dimensions.height : null).form-control
       
       hr.separator
 
       .form-group
         label Attributes
-        textarea(name="attributes" placeholder="Colors | Red, Blue, Green").form-control
+        textarea(name="attributes" placeholder="Colors | Red, Blue, Green").form-control= data.attributes
 
       .form-group
         label Note
-        textarea(name="note").form-control
+        textarea(name="note").form-control= data.note
 
       hr.separator
 
@@ -121,19 +119,24 @@ block content
         .col-sm-3
           .checkbox
             label 
-              input(type="checkbox" name="sold_individually" value="yes")
+              input(type="checkbox" name="sold_individually" value="yes" checked=(data.sold_individually === 'yes'))
               | Sold Individually?
             p.help-block Enable to allow only one item of this product to be purchased per order.
         .col-sm-3
           .checkbox
             label 
-              input(type="checkbox" name="reviews_allowed" value="yes" checked)
+              input(type="checkbox" name="reviews_allowed" value="yes" checked=(data.reviews_allowed === 'yes'))
               | Reviews allowed?
         .col-sm-3
           .pull-right
-            select(name="status").form-control
+            select(name="status" value=data.status).form-control
               option(value="published") Public
               option(value="private") Private
               option(value="draft") Draft
         .col-sm-3
           button(type="submit").btn.btn-primary.btn-block Submit
+
+block append footer_js
+  if data
+    script.
+      jQuery('.wyswyg').summernote('insertText', '#{data.content}');

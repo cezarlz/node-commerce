@@ -4,109 +4,99 @@ const pug = require('pug');
 const moment = require('moment');
 const path = require('path');
 
-class Helpers {
-  constructor(req, res) {
-    this._req = req;
-    this._res = res;
+const plugins = {
+  'jquery': ['jquery.js'],
+  'bootstrap': ['bootstrap.css', 'bootstrap.js'],
+  'wyswyg': ['summernote.css', 'summernote.js'],
+  'multiselect': ['bootstrap-multiselect.css', 'bootstrap-multiselect.js'],
+  'fileuploader': ['jquery.fileuploader.css', 'jquery.fileuploader.js']
+};
 
-    this._plugins = {
-      'jquery': ['jquery.js'],
-      'bootstrap': ['bootstrap.css', 'bootstrap.js'],
-      'wyswyg': ['summernote.css', 'summernote.js'],
-      'multiselect': ['bootstrap-multiselect.css', 'bootstrap-multiselect.js'],
-      'fileuploader': ['jquery.fileuploader.css', 'jquery.fileuploader.js']
-    };
-  }
+const Helpers = {};
 
-  get req() {
-    return this._req;
-  }
+Helpers.isHome = function (url) {
+  return url.match(/^\/$/) !== null || url === ''
+};
 
-  get res() {
-    return this._res;
-  }
+Helpers.isCheckout = function (url) {
+  return url.match(/^\/checkout\/?$/) !== null;
+};
 
-  get plugins() {
-    return this._plugins;
-  }
+Helpers.isCart = function (url) {
+  return url.match(/^\/cart\/?$/) !== null;
+};
 
-  isHome() {
-    return this.req.originalUrl.match(/^\/$/) !== null || this.req.originalUrl === ''
-  }
+Helpers.isProduct = function (url) {
+  return url.match(/^\/product\/([a-z0-9-]{1,})\/?$/) !== null;
+};
 
-  isCheckout() {
-    return this.req.originalUrl.match(/^\/checkout\/?$/) !== null;
-  }
+Helpers.isOrder = function (url) {
+  return url.match(/^\/order\/([a-z0-9-]{1,})\/?$/) !== null;
+};
 
-  isCart() {
-    return this.req.originalUrl.match(/^\/cart\/?$/) !== null;
-  }
+Helpers.isPage = function (url) {
+  return url.match(/^\/page\/([a-z0-9-]{1,})\/?$/) !== null;
+};
 
-  isProduct() {
-    return this.req.originalUrl.match(/^\/product\/([a-z0-9-]{1,})\/?$/) !== null;
-  }
+Helpers.is404 = function (url) {
+  return false;
+};
 
-  isOrder() {
-    return this.req.originalUrl.match(/^\/order\/([a-z0-9-]{1,})\/?$/) !== null;
-  }
+Helpers.isAdmin = function (url) {
+  return url.match(/^\/admin\/?/) !== null;
+};
 
-  isPage() {
-    return this.req.originalUrl.match(/^\/page\/([a-z0-9-]{1,})\/?$/) !== null;
-  }
+Helpers.isInstall = function (url) {
+  return url.match(/^\/admin\/install\/?$/) !== null;
+};
 
-  is404() {
-    return false;
-  }
+Helpers.isAssetRequest = function () {
+  return url.match(/(\.css|\.js|\.jpe?g|\.png|\.webp|\.ico|\.mp?3?4|\.mpeg|\.avi|\.ogg|\.ogv)$/) !== null;
+};
 
-  isAdmin() {
-    return this.req.originalUrl.match(/^\/admin\/?/) !== null;
-  }
+Helpers.adminMenuItem = function (title, href, icon = 'pushpin') {
+  const url = this.req.originalUrl.split('/');
+  const menu = href.split('/');
 
-  isInstall() {
-    return this.req.originalUrl.match(/^\/admin\/install\/?$/) !== null;
-  }
+  const urlType = url[3] || url[2];
+  const menuType = menu[3] || menu[2];
 
-  isAssetRequest() {
-    return this.req.originalUrl.match(/(\.css|\.js|\.jpe?g|\.png|\.webp|\.ico|\.mp?3?4|\.mpeg|\.avi|\.ogg|\.ogv)$/) !== null;
-  }
+  const isActive = urlType === menuType;
 
-  adminMenuItem(title, href, icon = 'pushpin') {
-    const isActive = this.req.originalUrl === href;
-
-    const menuItem = `
+  const menuItem = `
       li(class="${isActive ? 'active' : ''}")
         a(href="${href}")
           span(class="glyphicon glyphicon-${icon}")
           | ${title}
     `;
 
-    return pug.render(menuItem.trim());
+  return pug.render(menuItem.trim());
+};
+
+Helpers.adminMenuDivider = function () {
+  const menuDivider = `li.nav-divider`;
+
+  return pug.render(menuDivider.trim());
+};
+
+Helpers.adminCategoriesList = function (post) {
+  let categories = [];
+
+  const createItem = function (category) {
+    const link = `a(href="/admin/category/${category}").btn.btn-link.btn-xs ${category}`;
+
+    return pug.render(link);
+  };
+
+  if (post.categories && post.categories.length) {
+    categories = post.categories.map(category => createItem(category));
   }
 
-  adminMenuDivider() {
-    const menuDivider = `li.nav-divider`;
+  return categories.length ? categories.join(' | ') : '-';
+};
 
-    return pug.render(menuDivider.trim());
-  }
-
-  adminCategoriesList(post) {
-    let categories = [];
-
-    const createItem = function (category) {
-      const link = `a(href="/admin/category/${category}").btn.btn-link.btn-xs ${category}`;
-
-      return pug.render(link);
-    };
-
-    if (post.categories && post.categories.length) {
-      categories = post.categories.map(category => createItem(category));
-    }
-
-    return categories.length ? categories.join(' | ') : '-';
-  }
-
-  adminPagination(data) {
-    const pagination = `
+Helpers.adminPagination = function (data) {
+  const pagination = `
       nav.nav-pager
         ul.pager
           li ${data.total} ${data.total === 1 ? 'item' : 'items'}
@@ -117,84 +107,83 @@ class Helpers {
             a(href="#") Next &rarr;
     `;
 
-    const singlePagination = `
+  const singlePagination = `
       nav.nav-pager
         ul.pager
           li ${data.total} ${data.total === 1 ? 'item' : 'items'}
     `;
 
-    return data.docs.length ? pug.render((data.pages > 1 ? pagination : singlePagination).trim()) : null;
-  }
+  return data.docs.length ? pug.render((data.pages > 1 ? pagination : singlePagination).trim()) : null;
+};
 
-  formatDate(date, format = 'MM/DD/YYYY') {
-    let formatDate = moment(date);
+Helpers.formatDate = function (date, format = 'MM/DD/YYYY') {
+  let formatDate = moment(date);
 
-    if (formatDate.isValid()) return formatDate.format(format);
+  if (formatDate.isValid()) return formatDate.format(format);
 
-    return 'Invalid date';
-  }
+  return 'Invalid date';
+};
 
-  loadCss(file, path = '/admin/css', rel = 'stylesheet') {
-    const link = `link(href="${path}/${file}" rel="${rel}")`;
+Helpers.loadCss = function (file, path = '/admin/css', rel = 'stylesheet') {
+  const link = `link(href="${path}/${file}" rel="${rel}")`;
 
-    return pug.render(link);
-  }
+  return pug.render(link);
+};
 
-  loadJs(file, path = '/admin/js', type = 'text/javascript') {
-    const link = `script(src="${path}/${file}" type="${type}")`;
+Helpers.loadJs = function (file, path = '/admin/js', type = 'text/javascript') {
+  const link = `script(src="${path}/${file}" type="${type}")`;
 
-    return pug.render(link);
-  }
+  return pug.render(link);
+};
 
-  loadPlugin(pluginName) {
-    const plugin = this.plugins[pluginName];
+Helpers.loadPlugin = function (pluginName) {
+  const plugin = plugins[pluginName];
 
-    if (!plugin) return false;
+  if (!plugin) return false;
 
-    const files = {
-      css: [],
-      js: []
-    };
+  const files = {
+    css: [],
+    js: []
+  };
 
-    plugin.forEach(file => {
-      const isCss = file.endsWith('.css');
-      const isJs = file.endsWith('.js');
+  plugin.forEach(file => {
+    const isCss = file.endsWith('.css');
+    const isJs = file.endsWith('.js');
 
-      if (isCss) {
-        files.css.push(this.loadCss(file));
-      }
+    if (isCss) {
+      files.css.push(this.loadCss(file));
+    }
 
-      if (isJs) {
-        files.js.push(this.loadJs(file));
-      }
-    });
+    if (isJs) {
+      files.js.push(this.loadJs(file));
+    }
+  });
 
-    return files;
-  }
+  return files;
+};
 
-  bodyClass(className = []) {
-    const classes = [];
+Helpers.bodyClass = function (className = []) {
+  const classes = [];
 
-    if (this.isHome()) classes.push('home');
+  if (this.isHome()) classes.push('home');
 
-    if (this.is404()) classes.push('error404');
+  if (this.is404()) classes.push('error404');
 
-    if (this.isAdmin()) classes.push('admin');
+  if (this.isAdmin()) classes.push('admin');
 
-    if (this.isCart()) classes.push('cart');
+  if (this.isCart()) classes.push('cart');
 
-    if (this.isCheckout()) classes.push('checkout');
+  if (this.isCheckout()) classes.push('checkout');
 
-    if (this.isOrder()) classes.push('order');
+  if (this.isOrder()) classes.push('order');
 
-    if (this.isPage()) classes.push('page');
+  if (this.isPage()) classes.push('page');
 
-    if (this.isProduct()) classes.push('product');
+  if (this.isProduct()) classes.push('product');
 
-    if (this.isInstall()) classes.push('install');
+  if (this.isInstall()) classes.push('install');
 
-    return classes.concat(className).join(' ');
-  }
-}
+  return classes.concat(className).join(' ');
+};
 
 module.exports = Helpers;

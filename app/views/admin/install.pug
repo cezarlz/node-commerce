@@ -15,35 +15,35 @@ block content
 
         .row
           .form-group
-            label.col-sm-4.control-label Site Title
+            label.col-sm-4.control-label Site Name
             .col-sm-8
-              input(name="site_title" type="text" value=data.site_title required).form-control
+              input(name="name" type="text" value=data.name required).form-control
 
           .form-group
             label.col-sm-4.control-label Site Description
             .col-sm-8
-              input(name="site_description" maxlength="160" type="text" value=data.site_description).form-control
+              input(name="description" maxlength="160" type="text" value=data.description).form-control
 
           .form-group
             label.col-sm-4.control-label Username
             .col-sm-8
-              input(name="user_login" type="text" value=data.user_login required).form-control
+              input(name="username" type="text" value=data.username required).form-control
               small You will use this username for future logins.
 
           .form-group
             label.col-sm-4.control-label Password, twice
             .col-sm-8
-              input(name="user_password" minlenght="10" type="password").form-control
+              input(name="password" minlenght="10" type="password").form-control
 
           .form-group
             label.col-sm-4.control-label
             .col-sm-8
-              input(name="user_password_repeat" minlenght="10" type="password").form-control
+              input(name="password_repeat" minlenght="10" type="password").form-control
 
           .form-group
             label.col-sm-4.control-label E-mail
             .col-sm-8
-              input(name="user_email" type="email" placeholder="e.g.: email@example.com" value=data.user_email).form-control
+              input(name="email" type="email" placeholder="e.g.: email@example.com" value=data.email).form-control
 
           .form-group
             label.col-sm-4.control-label Theme
@@ -51,6 +51,34 @@ block content
               select(name="theme").form-control
                 each theme in themes
                   option(value= theme.folder)= `${theme.name} - ${theme.description}`
+
+          .form-group
+            label.col-sm-4.control-label Where is your store based?
+            .col-sm-8
+              select(name="store_country").form-control
+                each country in countries
+                  option(value=country.alpha3 selected=country.alpha3 == 'USA')= `${country.name}` 
+          .form-group
+            label.col-sm-4.control-label Which currency will your store use?
+            .col-sm-8
+              select(name="currency_code").form-control
+                each currency in currencies
+                  option(value=currency.code selected=currency.code == 'USD')= `${currency.name} (${currency.symbol})` 
+          
+          .form-group
+            label.col-sm-4.control-label Which unit should be used for product weights?
+            .col-sm-8
+              select(name="ship_weight").form-control
+                option(value="lbs") lbs 
+                option(value="kg") kg
+
+          .form-group
+            label.col-sm-4.control-label Which unit should be used for product dimensions?
+            .col-sm-8
+              select(name="ship_dimension").form-control
+                option(value="in") in 
+                option(value="cm") cm 
+
 
           .form-group
             .col-xs-12
