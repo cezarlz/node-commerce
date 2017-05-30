@@ -6,12 +6,33 @@ const Flash = require('@helpers/flash');
 // Models
 const ProductModel = require('./model');
 
+const generateProductAttributes = async function (attributes = null) {
+  if (!attributes) return null;
+
+  let data = [];
+
+  attributes = attributes.split('\r\n');
+
+  attributes.forEach(attr => {
+    let matchFormat = /^(.+) \| (?!,)(.+)$/.test(attr);
+
+    if (!matchFormat) return;
+
+    let index = attr.split('|')[0].trim();
+    let values = attr.split('|')[1].trim().split(',').map(value => {
+      return value.trim();
+    });
+
+    data.push({ index, values });
+  });
+
+  return data;
+};
+
 const Product = {};
 
 Product.create = async function (product = {}) {
   try {
-    console.log(product);
-
     // Sale price cannot be bigger than price
     if (numeral(product.sale_price).value() >= numeral(product.price).value()) {
       throw new Flash({
@@ -22,7 +43,7 @@ Product.create = async function (product = {}) {
     }
 
     // Generate attributes
-    product.attributes = Product.generateProductAttributes(product.attributes);
+    product.attributes = generateProductAttributes(product.attributes);
 
     // Reviews allowed?
     product.reviews_allowed = product.reviews_allowed === 'yes';
@@ -55,29 +76,6 @@ Product.create = async function (product = {}) {
   }
 };
 
-Product.generateProductAttributes = async function (attributes = null) {
-  if (!attributes) return null;
-
-  let data = [];
-
-  attributes = attributes.split('\r\n');
-
-  attributes.forEach(attr => {
-    let matchFormat = /^(.+) \| (?!,)(.+)$/.test(attr);
-
-    if (!matchFormat) return;
-
-    let index = attr.split('|')[0].trim();
-    let values = attr.split('|')[1].trim().split(',').map(value => {
-      return value.trim();
-    });
-
-    data.push({ index, values });
-  });
-
-  return data;
-};
-
 Product.find = async function (options = {}, page = 1, limit = 20) {
   try {
     return await ProductModel.paginate(options, { page, limit });
@@ -87,7 +85,4 @@ Product.find = async function (options = {}, page = 1, limit = 20) {
   }
 };
 
-module.exports = {
-  create: Product.create,
-  find: Product.find
-};
+module.exports = Product;

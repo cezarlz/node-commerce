@@ -30,15 +30,12 @@ router.post('/create', productFileFields, async (req, res) => {
     let productData = Object.assign({}, req.body, req.files);
 
     let validate = await boss.validate(productData, {
-      title: { required: true },
+      name: { required: true },
       status: { required: true },
       price: { required: true }
     });
 
     const product = await Product.create(validate.source);
-
-    console.log('criado');
-    console.log('%j', product);
 
     req.flash({
       message: `Success! Product created.`,
@@ -48,8 +45,6 @@ router.post('/create', productFileFields, async (req, res) => {
     return res.redirect(`/admin/dashboard/products/${product._id}`);
   }
   catch (e) {
-    console.log(e);
-
     req.flash(e);
 
     return res.render(`admin/dashboard/products/create`, {

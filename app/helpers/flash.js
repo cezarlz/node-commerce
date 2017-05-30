@@ -13,7 +13,9 @@ const FLASH_MESSAGES = {
   PASSWORDS_DOESNT_MATCH: `The passwords are wrong. Did you type correctly?`,
   // Bus
   HELPERS_BUS_TAG_NOT_FOUND: `The parameter "tag" is required and must be a string.`,
-  HELPERS_BUS_CALLBACK_NOT_FUNCTION: `The parameter "callback" must be a function.`
+  HELPERS_BUS_CALLBACK_NOT_FUNCTION: `The parameter "callback" must be a function.`,
+  // Category
+  CATEGORY_PARAMETER_NOT_FOUND: `The parameter "category" wasn't found.`
 };
 
 const FLASH_TYPES = {

@@ -1,7 +1,5 @@
 'use strict';
 
-const Helpers = require('../helpers/helpers');
-
 const pug = require('pug');
 const moment = require('moment');
 const path = require('path');

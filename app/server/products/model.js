@@ -6,7 +6,7 @@ const paginate = require('mongoose-paginate');
 const slug = require('mongoose-slug-generator');
 
 const schema = {
-  title: {
+  name: {
     type: String,
     required: true
   },
@@ -14,7 +14,7 @@ const schema = {
     type: String,
     lowercase: true,
     unique: true,
-    slug: 'title'
+    slug: 'name'
   },
   status: {
     type: String,
